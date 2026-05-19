@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5">
+<meta name="theme-color" content="#1A8B8C">
+<title>Portal de Estudos — Associação Shinri</title>
+<meta name="description" content="Portal de estudos da Associação Shinri — Bolas de Luz e Osatoshi Individual. Guia compilado por Paula Saccardi.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3CradialGradient id='g'%3E%3Cstop offset='0%25' stop-color='%23FFD166'/%3E%3Cstop offset='60%25' stop-color='%235FC2C4'/%3E%3Cstop offset='100%25' stop-color='%231A8B8C'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='45' fill='url(%23g)'/%3E%3Ctext x='50' y='65' font-size='40' text-anchor='middle'%3E%E2%9C%A8%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<style>
+/* ===== PORTAL STYLES ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:#f0f9f6;color:#122820;line-height:1.75;}
+.portal-view, .bdl-view, .osatoshi-view { display:none; }
+.portal-view.active, .bdl-view.active, .osatoshi-view.active { display:block; }
+
+/* Portal home */
+.portal-home{min-height:100vh;display:flex;flex-direction:column;}
+.portal-disclaimer{background:rgba(26,74,106,0.94);color:rgba(200,232,245,0.9);text-align:center;padding:.75rem 1.5rem;font-size:.8rem;letter-spacing:.02em;line-height:1.6;}
+.portal-disclaimer strong{color:#b8ecd8;}
+.portal-hero{background:linear-gradient(175deg,#c8e8f5 0%,#a8d8ee 40%,#b8ecd8 75%,#8adec0 100%);padding:3.5rem 2rem 2.5rem;text-align:center;position:relative;overflow:hidden;}
+.portal-hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2.4rem,5vw,3.8rem);font-weight:300;color:#1a4a6a;letter-spacing:.03em;}
+.portal-hero h1 em{font-style:italic;color:#2a6e5e;}
+.portal-hero .sub{margin-top:.5rem;font-size:.9rem;color:#2a4a42;letter-spacing:.08em;text-transform:uppercase;}
+.portal-orb{width:120px;height:120px;margin:0 auto 1.5rem;border-radius:50%;background:radial-gradient(circle,#FFD166,#5FC2C4,#1A8B8C);display:flex;align-items:center;justify-content:center;font-size:3.5rem;box-shadow:0 4px 30px rgba(26,139,140,0.35);animation:orb-pulse 3s ease-in-out infinite;}
+@keyframes orb-pulse{0%,100%{transform:scale(1);box-shadow:0 4px 30px rgba(26,139,140,0.35);}50%{transform:scale(1.03);box-shadow:0 8px 40px rgba(26,139,140,0.5);}}
+.portal-cards{max-width:700px;margin:0 auto;padding:2rem 1.5rem 3rem;display:grid;gap:1.25rem;}
+.portal-card{background:white;border-radius:16px;padding:2rem;cursor:pointer;border:2px solid rgba(42,110,94,0.1);box-shadow:0 4px 20px rgba(0,0,0,0.04);transition:all .25s;text-align:center;}
+.portal-card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,0.08);border-color:rgba(42,110,94,0.25);}
+.portal-card .emoji{font-size:3rem;margin-bottom:1rem;}
+.portal-card h2{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:#1a4a6a;margin-bottom:.5rem;}
+.portal-card p{font-size:.9rem;color:#6a8a82;line-height:1.6;}
+.portal-card .enter{display:inline-block;margin-top:1rem;padding:.5rem 1.5rem;background:linear-gradient(135deg,#1A8B8C,#0F3D3E);color:white;border-radius:8px;font-size:.85rem;letter-spacing:.05em;}
+.portal-footer{padding:2rem 1.5rem;text-align:center;background:#e4f4ef;border-top:1px solid rgba(42,110,94,0.1);}
+.portal-footer .name{color:#1A8B8C;font-weight:700;font-size:.85rem;letter-spacing:1.5px;margin-bottom:.3rem;}
+.portal-footer .desc{font-size:.75rem;color:#2a4a42;opacity:.7;line-height:1.6;}
+.portal-footer .links{font-size:.75rem;color:#1A8B8C;opacity:.8;margin:.8rem 0;}
+.portal-footer .warn{font-size:.7rem;color:#2a4a42;opacity:.5;font-style:italic;max-width:500px;margin:0 auto;line-height:1.6;}
+
+/* Back to portal button */
+.back-portal{position:fixed;top:auto;bottom:1.5rem;left:1.5rem;background:rgba(26,74,106,0.9);color:#b8ecd8;border:none;padding:.6rem 1rem;border-radius:10px;font-size:.8rem;cursor:pointer;z-index:300;box-shadow:0 4px 14px rgba(18,40,32,0.3);display:flex;align-items:center;gap:.4rem;font-family:'DM Sans',sans-serif;letter-spacing:.03em;}
+.back-portal:hover{background:rgba(26,74,106,1);}
+
+/* ===== BDL STYLES (scoped) ===== */
+.bdl-view {
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --sky:#c8e8f5; --sky-mid:#a8d8ee; --mint:#b8ecd8; --mint-mid:#8adec0;
+  --mint-deep:#5ab89e; --teal-dark:#2a6e5e; --blue-dark:#1a4a6a;
+  --bg:#f0f9f6; --bg2:#e4f4ef; --bg3:#d6eef8; --surface:#ffffff;
+  --ink:#122820; --ink2:#2a4a42; --ink3:#6a8a82; --border:rgba(42,110,94,0.15);
+  --basic-bg:#dff5ec; --basic-ink:#1a5a42;
+  --inter-bg:#d8eef8; --inter-ink:#1a4a6a;
+  --av-bg:#e8f8f2; --av-ink:#0e4a38;
+  --spec-bg:#f0eaff; --spec-ink:#4a2a8a;
+  --warn-bg:#fff4e0; --warn-ink:#7a4a10;
+  --danger-bg:#fde8e8; --danger-ink:#6a1818;
+  --ok-bg:#e0f5ea; --ok-ink:#1a5a32;
+  --radius:14px; --radius-sm:8px;
+  --fs-body:1.05rem; --fs-card:1rem; --fs-small:0.95rem; --fs-xs:0.85rem;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);line-height:1.75;font-size:var(--fs-body);}
+
+.disclaimer-top{background:rgba(26,74,106,0.94);color:rgba(200,232,245,0.9);text-align:center;padding:.75rem 1.5rem;font-size:var(--fs-xs);letter-spacing:.02em;line-height:1.6;}
+.disclaimer-top strong{color:var(--mint);}
+
+.hero{background:linear-gradient(175deg,var(--sky) 0%,var(--sky-mid) 40%,var(--mint) 75%,var(--mint-mid) 100%);padding:3.5rem 2rem 3rem;text-align:center;position:relative;overflow:hidden;}
+.hero-orbs{position:absolute;inset:0;pointer-events:none;}
+.orb{position:absolute;border-radius:50%;animation:orb-float 7s ease-in-out infinite;mix-blend-mode:multiply;}
+.orb1{width:220px;height:220px;top:-80px;left:5%;background:rgba(255,255,255,0.55);animation-delay:0s}
+.orb2{width:140px;height:140px;top:30px;right:8%;background:rgba(180,240,220,0.5);animation-delay:2.5s}
+.orb3{width:90px;height:90px;bottom:-10px;left:35%;background:rgba(200,230,250,0.6);animation-delay:5s}
+@keyframes orb-float{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-14px) scale(1.05)}}
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2.8rem,6vw,4.2rem);font-weight:300;color:var(--blue-dark);letter-spacing:.03em;position:relative;}
+.hero h1 em{font-style:italic;color:var(--teal-dark);}
+.hero-sub{margin-top:.5rem;font-size:var(--fs-small);color:var(--ink2);letter-spacing:.08em;text-transform:uppercase;position:relative;}
+
+nav{background:var(--blue-dark);padding:0 .5rem;display:flex;overflow-x:auto;scrollbar-width:none;justify-content:center;flex-wrap:wrap;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(18,40,32,.15);}
+nav::-webkit-scrollbar{display:none;}
+nav a{color:rgba(200,232,245,.6);text-decoration:none;font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;padding:.9rem .9rem;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;white-space:nowrap;}
+nav a:hover{color:var(--mint);border-bottom-color:var(--mint-mid);}
+
+main{max-width:960px;margin:0 auto;padding:2rem 1.5rem 5rem;}
+
+.sec-head{display:flex;align-items:center;gap:.75rem;margin:3.5rem 0 1.5rem;padding-bottom:.75rem;border-bottom:1.5px solid var(--border);}
+.sec-head h2{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:400;color:var(--ink);}
+.badge{font-size:.72rem;font-weight:500;letter-spacing:.07em;text-transform:uppercase;padding:4px 12px;border-radius:20px;flex-shrink:0;}
+.b-basic{background:var(--basic-bg);color:var(--basic-ink);}
+.b-inter{background:var(--inter-bg);color:var(--inter-ink);}
+.b-av{background:var(--av-bg);color:var(--av-ink);}
+.b-spec{background:var(--spec-bg);color:var(--spec-ink);}
+.b-todos{background:#e8f5ff;color:#1a3a5a;}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.8rem 2rem;margin-bottom:1.2rem;transition:transform .2s,box-shadow .2s;}
+.card:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(18,40,32,.07);}
+.card-title{font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-weight:500;color:var(--ink);margin-bottom:.3rem;}
+.card-sub{font-size:var(--fs-small);color:var(--ink3);font-style:italic;margin-bottom:1.1rem;}
+.source-tag{display:inline-block;font-size:.8rem;background:var(--bg2);color:var(--ink3);border:1px solid var(--border);border-radius:6px;padding:3px 10px;margin-bottom:1rem;}
+
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;margin-bottom:.75rem;}
+.meta-item label{display:block;font-size:.72rem;font-weight:500;text-transform:uppercase;letter-spacing:.09em;color:var(--ink3);margin-bottom:5px;}
+.meta-item p{font-size:var(--fs-small);color:var(--ink2);line-height:1.65;}
+
+.tag{display:inline-block;font-size:.75rem;font-weight:500;padding:3px 11px;border-radius:20px;}
+.t-ok{background:var(--ok-bg);color:var(--ok-ink);}
+.t-warn{background:var(--warn-bg);color:var(--warn-ink);}
+.t-no{background:var(--danger-bg);color:var(--danger-ink);}
+
+hr.div{border:none;border-top:1px solid var(--border);margin:1.1rem 0 .9rem;}
+
+.sub-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:.9rem 0;}
+.sub{background:var(--bg2);border-radius:var(--radius-sm);padding:13px 16px;border:1px solid var(--border);}
+.sub .sl{font-size:.72rem;font-weight:500;color:var(--ink3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;}
+.sub p{font-size:var(--fs-small);color:var(--ink2);line-height:1.65;}
+
+.pratica{background:var(--bg2);border-left:3px solid var(--mint-deep);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:1rem 1.3rem;margin-bottom:.85rem;}
+.pratica .p-label{font-size:.75rem;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--teal-dark);margin-bottom:.5rem;}
+.pratica p{font-size:var(--fs-small);color:var(--ink2);line-height:1.7;}
+.pratica ul{margin:.5rem 0 0 1.1rem;}
+.pratica ul li{font-size:var(--fs-small);color:var(--ink2);line-height:1.7;margin-bottom:.25rem;}
+
+.formula{background:var(--bg3);border-left:3px solid var(--mint-deep);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:1.1rem 1.3rem;margin-top:1.1rem;font-size:var(--fs-small);color:var(--ink2);line-height:2.1;}
+.formula strong{color:var(--teal-dark);}
+
+.oracao{background:#f6fdfb;border:1px solid rgba(90,184,158,.35);border-radius:var(--radius-sm);padding:1.1rem 1.3rem;margin:.85rem 0;font-size:var(--fs-small);color:var(--ink2);line-height:1.85;font-style:italic;}
+.oracao strong{font-style:normal;color:var(--teal-dark);font-size:.75rem;text-transform:uppercase;letter-spacing:.07em;display:block;margin-bottom:.45rem;}
+
+.steps{display:flex;flex-direction:column;gap:9px;margin:.9rem 0;}
+.step{display:flex;gap:13px;align-items:flex-start;background:var(--surface);border-radius:var(--radius-sm);padding:12px 15px;border:1px solid var(--border);}
+.step-num{min-width:26px;height:26px;border-radius:50%;background:var(--mint-deep);color:white;font-size:.72rem;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.step-body{flex:1;}
+.step-body .s-title{font-size:var(--fs-card);font-weight:500;color:var(--ink);line-height:1.4;}
+.step-body .s-size{display:inline-block;font-size:.75rem;background:var(--mint-mid);color:var(--teal-dark);border-radius:12px;padding:2px 10px;margin-top:5px;font-weight:500;}
+.step-body .s-note{font-size:var(--fs-xs);color:var(--ink3);margin-top:5px;font-style:italic;line-height:1.6;}
+
+.circle-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:1.1rem;}
+.circle-card{border-radius:var(--radius-sm);padding:12px 14px;border:1px solid var(--border);background:var(--bg);display:flex;align-items:flex-start;gap:11px;}
+.c-dot{width:17px;height:17px;border-radius:50%;flex-shrink:0;margin-top:3px;}
+.circle-card strong{display:block;font-size:var(--fs-xs);color:var(--ink);margin-bottom:3px;}
+.circle-card p{font-size:var(--fs-xs);color:var(--ink2);line-height:1.5;}
+
+.seq-group{background:var(--bg2);border-radius:var(--radius);padding:1.2rem 1.4rem;margin-bottom:12px;border:1px solid var(--border);}
+.seq-group-title{font-size:.75rem;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);margin-bottom:11px;display:flex;align-items:center;gap:9px;}
+.g-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+
+.alert{border-radius:var(--radius);padding:1.1rem 1.4rem;margin-top:1.2rem;display:flex;gap:13px;align-items:flex-start;font-size:var(--fs-small);line-height:1.7;}
+.alert-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;}
+.alert-mint{background:var(--bg3);border:1px solid rgba(90,184,158,.3);}
+.alert-mint .alert-icon{background:var(--mint-deep);color:white;}
+.alert-mint p{color:var(--teal-dark);}
+.alert-warn{background:var(--warn-bg);border:1px solid rgba(180,120,20,.25);}
+.alert-warn .alert-icon{background:#c48a30;color:white;}
+.alert-warn p{color:var(--warn-ink);}
+.alert-danger{background:var(--danger-bg);border:1px solid rgba(180,30,30,.2);}
+.alert-danger .alert-icon{background:#b03030;color:white;}
+.alert-danger p{color:var(--danger-ink);}
+
+.orb-row{display:flex;align-items:flex-end;gap:18px;margin:.9rem 0 0;flex-wrap:wrap;}
+.orb-item{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.orb-circle{border-radius:50%;border:1.5px solid;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:500;color:white;text-shadow:0 1px 3px rgba(0,0,0,.25);flex-shrink:0;}
+.orb-label{font-size:.72rem;color:var(--ink3);text-align:center;max-width:85px;line-height:1.35;}
+
+.prop-wrap{background:var(--bg2);border-radius:var(--radius);padding:1.3rem;margin-top:1.1rem;border:1px solid var(--border);overflow-x:auto;}
+
+footer{background:var(--blue-dark);color:rgba(200,232,245,.5);text-align:center;padding:2.5rem 1rem;font-size:var(--fs-small);letter-spacing:.04em;line-height:2.1;}
+footer a{color:rgba(184,236,216,.5);text-decoration:none;}
+footer a:hover{color:var(--mint);}
+.footer-author{color:rgba(200,232,245,.9);font-size:1.05rem;font-weight:500;letter-spacing:.06em;}
+.footer-disclaimer{font-size:var(--fs-xs);opacity:.6;margin-top:.5rem;line-height:1.7;}
+
+}
+/* Re-declare BDL styles without scoping issue - just include them globally since they use unique class names */
+details > summary { list-style: none; }
+details > summary::-webkit-details-marker { display: none; }
+</style>
+</head>
+<body>
+
+<!-- ===== PORTAL VIEW ===== -->
+<div class="portal-view active" id="portal-view">
+<div class="portal-home">
+  <div class="portal-disclaimer">
+    <strong>⚠️ Guia de estudo particular — uso pessoal e educativo.</strong> Compilado por Paula Saccardi com base nas apostilas oficiais da Associação Shinri. Não substitui as apostilas oficiais nem os ensinamentos da professora.
+  </div>
+  <div class="portal-hero">
+    <div class="portal-orb">✨</div>
+    <h1>Portal de <em>Estudos</em></h1>
+    <div class="sub">Associação Shinri · Verdade = Lei de Deus</div>
+  </div>
+  <div class="portal-cards">
+    <div class="portal-card" onclick="showView('bdl')">
+      <div class="emoji">✨</div>
+      <h2>Bolas de Luz</h2>
+      <p>MCFRF · MFDC · Cura · Crenças · Purificação · Omamori · Manto · Histórico da Alma · Osatoshi de Garrafa e mais</p>
+      <div class="enter">Entrar →</div>
+    </div>
+    <div class="portal-card" onclick="showView('osatoshi')">
+      <div class="emoji">🙏</div>
+      <h2>Osatoshi Individual</h2>
+      <p>Orações · Fluxogramas · Os 12 Tipos · Específicos (11 tipos) · Quiz de Fixação (30 perguntas)</p>
+      <div class="enter">Entrar →</div>
+    </div>
+  </div>
+  <div class="portal-footer">
+    <div class="name">Compilado e organizado por Paula Saccardi</div>
+    <div class="desc">Material de estudo pessoal · baseado nas apostilas oficiais<br>da Associação Shinri</div>
+    <div class="links">osatoshi.com.br · god-law.com (Japão)</div>
+    <div class="warn">⚠️ Este guia é de uso particular e não substitui as apostilas oficiais nem os ensinamentos da professora.</div>
+  </div>
+</div>
+</div>
+
+<!-- ===== BDL VIEW ===== -->
+<div class="bdl-view" id="bdl-view">
+<button class="back-portal" onclick="showView('portal')">← Portal</button>
+<div class="disclaimer-top">
+  <strong>⚠️ Guia de estudo particular — uso pessoal e educativo.</strong> Compilado por Paula Saccardi com base nas apostilas oficiais da Associação Shinri. Não substitui as apostilas oficiais nem os ensinamentos da professora.
+</div>
+
+<header class="hero">
+  <div class="hero-orbs">
+    <div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
+  </div>
+  <h1>Bolas de <em>Luz</em></h1>
+  <p class="hero-sub">Associação Shinri · Guia de Estudo</p>
+</header>
+
+<nav>
+  <a href="#mcfrf">MCFRF</a>
+  <a href="#mfdc">MFDC</a>
+  <a href="#garrafa">Osatoshi de Garrafa</a>
+  <a href="#historico">Histórico da Alma</a>
+  <a href="#treinamento">Treinamento Astral</a>
+  <a href="#frases-finais">Frases Finais</a>
+  <a href="#cura">Cura</a>
+  <a href="#crencas">Crenças</a>
+  <a href="#purificacao">Purificação</a>
+  <a href="#omamori">Omamori</a>
+  <a href="#manto">Manto</a>
+  <a href="#especificas">Específicas</a>
+  <a href="#regras">Regras</a>
+</nav>
+
+<main>
+
+<!-- ══ PROPORÇÕES ══ -->
+<!-- Seção de proporções removida - será redesenhada futuramente -->
+
+<!-- ══ MCFRF ══ -->
+<div class="sec-head" id="mcfrf">
+  <h2>MCFRF</h2>
+  <span class="badge b-inter">Versão Mestre</span>
+</div>
+<div class="card">
+  <p class="card-title">Método de Construir uma Família Repleta de Felicidade</p>
+  <p class="card-sub">Uma das BDL mais importantes — encaminha espíritos ao céu e pode elevá-los ao mundo divino. Quem recebe a versão Mestre é obrigado a passar adiante.</p>
+
+  <hr class="div">
+  <p style="font-size:.8rem;font-weight:500;color:var(--ink3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.9rem;">As 4 Práticas — conteúdo da bola</p>
+
+  <div class="pratica">
+    <p class="p-label">Prática 1 — Gratidão às pessoas (6 formas, pelo menos 10 pessoas por dia)</p>
+    <p>Imaginar a pessoa à frente e agradecer de 6 formas diferentes. Ordem: cônjuge → filhos → pais → avós, tios, irmãos, professores, vizinhos, chefes, colegas → e, por fim, os inimigos. As palavras se transformam em ondas vibratórias que atingem a alma da pessoa.</p>
+    <ul>
+      <li>Agradecido(a) <em>[nome]</em></li>
+      <li>Agradecido(a) sempre <em>[nome]</em></li>
+      <li>Muito agradecido(a) sempre <em>[nome]</em></li>
+      <li>Muitíssimo agradecido(a) <em>[nome]</em></li>
+      <li>Agradecido(a) de coração <em>[nome]</em></li>
+      <li>Agradecido(a) mesmo <em>[nome]</em></li>
+    </ul>
+    <p style="margin-top:.6rem;font-size:var(--fs-xs);color:var(--ink3);">"Sempre" reconhece o esforço contínuo — quem recebe sente que foi visto e valorizado até o momento atual.</p>
+  </div>
+
+  <div class="pratica">
+    <p class="p-label">Prática 2 — Gratidão no dia a dia</p>
+    <p>Usar "agradecido(a) sempre" na vida familiar e interpessoal: ao acordar, ao sair, ao chegar, ao dormir. Mesmo para quem nos é hostil — a prática transforma relacionamentos. Até inimigos tornam-se amigos.</p>
+  </div>
+
+  <div class="pratica">
+    <p class="p-label">Prática 3 — Cumprimento aos ancestrais</p>
+    <p>Imaginar os ancestrais agrupados à frente e cumprimentá-los, pedir perdão por não tê-los cumprimentado antes, agradecer. Resolver problemas de relacionamento (casamento, sogra/nora) cumprimentando os ancestrais da outra parte. Efeito imediato relatado nas apostilas — é suficiente que apenas uma das partes faça.</p>
+  </div>
+
+  <div class="pratica">
+    <p class="p-label">Prática 4 — Gratidão a tudo ao redor (natureza, Terra, Universo)</p>
+    <p>Agradecer aos animais, plantas, natureza, alimentos, objetos e ao planeta Terra e ao Universo:</p>
+    <ul>
+      <li>Árvores — agradecido(a) por sempre nos fornecerem oxigênio.</li>
+      <li>Flores — agradecido(a) por nos darem lindas visões.</li>
+      <li>Plantações — agradecido(a) por nos fornecerem alimentos.</li>
+      <li>Animais de estimação — muito agradecido(a) por estarem sempre por perto.</li>
+      <li>TV e rádio — agradecido(a) por nos divertirem sempre.</li>
+      <li>E assim por diante — as palavras podem ser adaptadas.</li>
+    </ul>
+    <p style="margin-top:.6rem;font-size:var(--fs-xs);color:var(--ink3);">Com esse método podemos construir não só uma família feliz, mas uma cidade, um país, um planeta e um Universo repleto de felicidade.</p>
+  </div>
+
+  <div class="meta">
+    <div class="meta-item"><label>Tamanho</label><p>~65 cm — versão Mestre</p></div>
+    <div class="meta-item"><label>Quando usar</label><p>Etapa final do Osatoshi. Pode ser usada fora: para pessoas, locais, o planeta Terra.</p></div>
+    <div class="meta-item"><label>Gera karma?</label><p><span class="tag t-ok">Não gera</span></p></div>
+  </div>
+</div>
+
+<!-- ══ MFDC ══ -->
+<div class="sec-head" id="mfdc">
+  <h2>MFDC</h2>
+  <span class="badge b-av">Versão Completa</span>
+</div>
+<div class="card">
+  <p class="card-title">Método de Fazer os Deuses Crescerem</p>
+  <p class="card-sub">Única BDL que fortalece o Hontai — somente dentro do Osatoshi. Deve ser completamente memorizada antes de usar.</p>
+
+  <hr class="div">
+  <p style="font-size:.8rem;font-weight:500;color:var(--ink3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.9rem;">Conteúdo da bola — versão completa</p>
+
+  <div class="pratica">
+    <p class="p-label">1. Tornar-se grande, atraente e poderoso</p>
+    <p>Voltar para a infância, quando estavam começando a engatinhar. A mãe fazia tudo; mas vocês queriam fazer as coisas por conta própria ("Eu! Eu!! — faz! Faz!"). Ao ser ensinado, dizer: "agradecido(a), mamãe!"</p>
+    <p style="margin-top:.5rem;">Ao crescer (3–4 anos): pedir educadamente para aprender ("Por favor, ensine-me como fazer isso, senhor/senhora") → agradecer sempre → ser organizado e limpo → o que souber fazer bem, ensinar generosamente aos amigos com dificuldade → assim fazer muitos amigos.</p>
+    <p style="margin-top:.5rem;">Voltar quando estavam começando a andar e receber bastante carinho e atenção dos pais — mesmo os que têm irmãos mais novos têm o direito de receber muito amor.</p>
+  </div>
+
+  <div class="pratica">
+    <p class="p-label">2. Melhorar os relacionamentos</p>
+    <p>Observar o deus que se dá bem com todos e descobrir o segredo dele. Pedir que ensine como melhorar o relacionamento com os outros. Aprender a perdoar — quem nos irritou talvez não o tenha feito por maldade, mas num momento de dificuldade própria.</p>
+  </div>
+
+  <div class="pratica">
+    <p class="p-label">3. Casamento feliz (para as deusas/esposas)</p>
+    <p>Quando o marido chegar em casa, dizer: "Que bom que chegou, agradecida sempre por seu empenho e trabalho duro por mim (por nós)". Quando os filhos já falarem, falar essa frase juntos.</p>
+  </div>
+
+  <div class="pratica">
+    <p class="p-label">4. Casal feliz (para os deuses/maridos)</p>
+    <p>Quando estiverem sozinhos, agradecer à esposa: "muito agradecido sempre, pelos afazeres de casa" e, na privacidade, dedicar o tempo que for preciso para fazê-la realmente feliz e satisfeita.</p>
+  </div>
+
+  <div class="pratica">
+    <p class="p-label">5. Reeducação dos filhos</p>
+    <p>Ensinar os filhos a fazerem tudo sozinhos desde pequeninos. Ensinar a pedir orientação com educação e agradecer. O que têm dificuldade: aprender o passo a passo até fazer com perfeição. O que fazem bem: ensinar generosamente aos outros → assim ter muitos amigos.</p>
+    <p style="margin-top:.5rem;">Ensinar a agradecer aos pais e aos ancestrais. Não falar mal do cônjuge na frente dos filhos — sempre elogiar os pontos positivos. Chamar cada filho pelo nome e dizer: "Agradecidos por você ter nascido filho(a) do papai e da mamãe. Estamos muito felizes por isso." (repetir em várias ocasiões enquanto pequeninos)</p>
+  </div>
+
+  <div class="pratica">
+    <p class="p-label">6. Frase ao enviar (dizer após os 20 segundos de espera)</p>
+    <p><em>"Se você praticar seriamente o conteúdo dessa Bola de Luz desde a época em que estava começando a engatinhar, será amado(a) por todos, irá aprender muitas coisas desde criança e, quando crescer, terá vários amigos. Além disso, quando se casar, formará um casal muito feliz. Seus filhos irão ser bons filhos, que amam os seus pais e serão adultos fortes e inteligentes. E haverá harmonia entre os ancestrais das duas partes, que trabalharão para que os seus descendentes sejam prósperos e abundantes."</em></p>
+  </div>
+
+  <div class="meta" style="margin-top:.5rem;">
+    <div class="meta-item"><label>Tamanho</label><p>80 cm — versão completa<br>50 cm — deus de outro planeta</p></div>
+    <div class="meta-item"><label>Quando usar</label><p>Somente dentro do Osatoshi. Única BDL que fortalece o Hontai.</p></div>
+    <div class="meta-item"><label>Gera karma?</label><p><span class="tag t-warn">Contexto</span> — Seguir regras gerais do Osatoshi.</p></div>
+  </div>
+</div>
+
+<!-- ══ OSATOSHI DE GARRAFA ══ -->
+<div class="sec-head" id="garrafa">
+  <h2>Osatoshi de Garrafa</h2>
+  <span class="badge b-av">Avançado</span>
+</div>
+<div class="card">
+  <p class="card-title">Salvação com conjunto de BDL — versão completa</p>
+  <p class="card-sub">Imaginar-se pequeno(a) à frente e enviar as bolas em sequência. Proibido uso de mediunidade.</p>
+  <div class="seq-group">
+    <div class="seq-group-title"><div class="g-dot" style="background:#3a7abf"></div>Etapa 1 — Espíritos humanos · círculo azul</div>
+    <div class="steps">
+      <div class="step"><div class="step-num">A</div><div class="step-body"><p class="s-title">BDL de Purificação — retirar parte escura</p><span class="s-size">Concentrar contando até 12</span></div></div>
+      <div class="step"><div class="step-num">1</div><div class="step-body"><p class="s-title">BDL Histórico da Alma</p><span class="s-size">Variável — depende do nº de espíritos</span><p class="s-note">"Aqui está o histórico da alma de vocês, vamos nos lembrar das vidas passadas."</p></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><p class="s-title">BDL Treinamento no Mundo Astral</p><span class="s-size">~40 cm</span><p class="s-note">"Lembraram-se? Refaçam essas vidas passadas pelo critério do céu."</p></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><p class="s-title">MCFRF — versão Mestre</p><span class="s-size">~65 cm</span><p class="s-note">"Pratiquem isso seriamente desde quando eram crianças." (5 segundos)</p></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body"><p class="s-title">BDL Frases Finais</p><span class="s-size">~20 cm</span><p class="s-note">"Espíritos-guias, por favor guiem-nos! Adeus e felicidades!"</p></div></div>
+    </div>
+  </div>
+  <div class="seq-group">
+    <div class="seq-group-title"><div class="g-dot" style="background:#3a7abf"></div>Etapa 2 — Espíritos escondidos · círculo azul</div>
+    <div class="steps"><div class="step"><div class="step-num">→</div><div class="step-body"><p class="s-title">Purificação + mesma sequência de 4 bolas</p><p class="s-note">"SDL, siga a conexão espiritual dos que estão escondidos e traga todos eles."</p></div></div></div>
+  </div>
+  <div class="seq-group">
+    <div class="seq-group-title"><div class="g-dot" style="background:#2a8a4a"></div>Etapa 3 — Bunkons e deuses · círculo azul</div>
+    <div class="steps">
+      <div class="step"><div class="step-num">A</div><div class="step-body"><p class="s-title">BDL de Purificação</p><span class="s-size">Concentrar contando até 12</span></div></div>
+      <div class="step"><div class="step-num">1</div><div class="step-body"><p class="s-title">BDL Histórico da Alma</p><span class="s-size">~25 cm ou mais</span></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><p class="s-title">MFDC — versão completa</p><span class="s-size">~80 cm</span><p class="s-note">(esperar 20 segundos)</p></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><p class="s-title">MCFRF — versão Mestre</p><span class="s-size">~65 cm</span></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body"><p class="s-title">BDL Frases Finais bunkons/deuses</p><span class="s-size">~20 cm</span><p class="s-note">"Todos os deuses da Shinri, guiem esses bunkons e deuses."</p></div></div>
+    </div>
+  </div>
+  <div class="seq-group">
+    <div class="seq-group-title"><div class="g-dot" style="background:#222"></div>Etapa 4 — Resquícios · círculo preto</div>
+    <div class="steps"><div class="step"><div class="step-num">●</div><div class="step-body"><p class="s-title">BDL de Purificação</p><span class="s-size">Concentrar contando até 12</span><p class="s-note">Chips, implantes, artefatos, formas-pensamento, miasmas, larvas astrais e toxinas.</p></div></div></div>
+  </div>
+  <div class="seq-group">
+    <div class="seq-group-title"><div class="g-dot" style="background:#2a8a4a"></div>Etapa 5 — Restauração · círculo verde</div>
+    <div class="steps"><div class="step"><div class="step-num">●</div><div class="step-body"><p class="s-title">BDL de Restauração dos corpos espiritual e astral</p><span class="s-size">Concentrar contando até 12</span><p class="s-note">"SDL, me dê uma BDL para restaurar os corpos espiritual, astral e físico danificados."</p></div></div></div>
+  </div>
+  <div class="alert alert-warn"><div class="alert-icon">!</div><p>Uso de mediunidade é <strong>absolutamente proibido</strong> durante todo o Osatoshi de Garrafa.</p></div>
+</div>
+
+<!-- ══ HISTÓRICO DA ALMA ══ -->
+<div class="sec-head" id="historico">
+  <h2>BDL do Histórico da Alma</h2>
+  <span class="badge b-av">Avançado</span>
+</div>
+<div class="card">
+  <p class="card-title">Regressão instantânea e leitura do número de espíritos</p>
+  <p class="card-sub">Única bola de expansão — não pode ser concentrada. O tamanho onde as mãos param naturalmente é a resposta.</p>
+  <div class="oracao">
+    <strong>Como chamar e fazer</strong>
+    Juntar as mãos em posição de oração bem acima da cabeça → começar a abrir <strong>devagar</strong> → as mãos param naturalmente quando a bola estiver cheia → <strong>o tamanho onde param revela o número de espíritos.</strong><br><br>
+    Ao enviar dizer: <em>"Aqui está o histórico da alma de vocês — vamos nos lembrar das vidas passadas."</em>
+  </div>
+  <div class="formula">
+    <strong>Régua — espíritos humanos (divisor 20):</strong><br>
+    Nº = (diâmetro ÷ 20)³ &nbsp;·&nbsp; 20 cm = 1 &nbsp;·&nbsp; 40 cm = 8 &nbsp;·&nbsp; 60 cm = 27 &nbsp;·&nbsp; 80 cm = 64<br><br>
+    <strong>Régua — bunkons e deuses (divisor 25):</strong><br>
+    Nº = (diâmetro ÷ 25)³ &nbsp;·&nbsp; 25 cm = 1 &nbsp;·&nbsp; 50 cm = 8 &nbsp;·&nbsp; 75 cm = 27<br>
+    Bunkons geralmente trabalham sozinhos → bola de ~25 cm = 1 bunkon/deus. Arredondar se der número quebrado.
+  </div>
+  <div class="meta" style="margin-top:1rem;">
+    <div class="meta-item"><label>Concentra?</label><p><span class="tag t-no">Não concentra</span> — É de expansão. O tamanho carrega a informação.</p></div>
+    <div class="meta-item"><label>Quando usar</label><p>Apenas no Osatoshi. 1ª bola da sequência do Garrafa.</p></div>
+  </div>
+</div>
+
+<!-- ══ TREINAMENTO ASTRAL ══ -->
+<div class="sec-head" id="treinamento">
+  <h2>BDL — Treinamento no Mundo Astral</h2>
+  <span class="badge b-av">Avançado</span>
+</div>
+<div class="card">
+  <p class="card-title">Refazer a vida passada pelo critério do céu</p>
+  <p class="card-sub">2ª bola na sequência do Osatoshi de Garrafa — ~40 cm, mãos na altura dos olhos</p>
+  <div class="oracao">
+    <strong>Como chamar e frase ao enviar</strong>
+    Braços abertos na altura dos olhos, bola de ~40 cm, esperar encher. Ao enviar dizer:<br>
+    <em>"Lembraram-se? Então refaçam essas vidas passadas usando este critério: a pessoa que está no céu não faz isso; a pessoa que está no céu certamente fará assim."</em>
+  </div>
+  <div class="meta" style="margin-top:.85rem;">
+    <div class="meta-item"><label>Conteúdo</label><p>O espírito refaz toda a existência desde criança. Volta ao momento onde errou e corrige com o critério do céu. Inclui voltar à época em que deixou de receber atenção/carinho e refazer aquela fase.</p></div>
+    <div class="meta-item"><label>Quando usar</label><p>Somente no Osatoshi, como 2ª bola — após a BDL do Histórico da Alma.</p></div>
+  </div>
+</div>
+
+<!-- ══ FRASES FINAIS ══ -->
+<div class="sec-head" id="frases-finais">
+  <h2>BDL com Frases Finais do Osatoshi</h2>
+  <span class="badge b-av">Avançado</span>
+</div>
+<div class="card">
+  <p class="card-title">Encerramento — reparação, limpeza e envio ao céu</p>
+  <p class="card-sub">~20 cm — mãos na altura dos olhos. 4ª e última bola da sequência do Osatoshi de Garrafa.</p>
+  <div class="sub-grid">
+    <div class="sub">
+      <p class="sl">Para espíritos humanos (~20 cm)</p>
+      <p><strong>Conteúdo:</strong></p>
+      <ul style="margin:.4rem 0 0 1rem;">
+        <li style="font-size:var(--fs-xs);line-height:1.6;margin-bottom:.2rem;">Reparação de todo o dano causado à pessoa</li>
+        <li style="font-size:var(--fs-xs);line-height:1.6;margin-bottom:.2rem;">Retirada de todos os resquícios</li>
+        <li style="font-size:var(--fs-xs);line-height:1.6;margin-bottom:.2rem;">Participação na classe de estudos aos recém-chegados ao céu, para subir cada vez mais</li>
+      </ul>
+      <p style="margin-top:.5rem;font-size:var(--fs-xs);font-style:italic;">"Sei que aí é um mundo maravilhoso, mas no céu existem várias camadas — quanto mais elevada, melhor. Acima do céu existe um mundo novo onde deuses e espíritos convivem. Participe das classes e se esforce para subir mais ainda. Espírito-guia, por favor guie-o. Adeus e felicidades!"</p>
+    </div>
+    <div class="sub">
+      <p class="sl">Para bunkons e deuses (~20 cm)</p>
+      <p><strong>Conteúdo:</strong></p>
+      <ul style="margin:.4rem 0 0 1rem;">
+        <li style="font-size:var(--fs-xs);line-height:1.6;margin-bottom:.2rem;">Reparação de todo dano causado</li>
+        <li style="font-size:var(--fs-xs);line-height:1.6;margin-bottom:.2rem;">Recolhimento pelo Hontai e reeducação do bunkon</li>
+        <li style="font-size:var(--fs-xs);line-height:1.6;margin-bottom:.2rem;">Recebimento de nova missão do SDL</li>
+        <li style="font-size:var(--fs-xs);line-height:1.6;margin-bottom:.2rem;">Participação nas classes de estudos da Shinri (Japão e Brasil) para se manter atualizado</li>
+      </ul>
+      <p style="margin-top:.5rem;font-size:var(--fs-xs);font-style:italic;">"Todos os deuses da Associação Shinri, guiem esses bunkons e deuses. Adeus e felicidades!"</p>
+    </div>
+  </div>
+  <div class="alert alert-mint" style="margin-top:1rem;">
+    <div class="alert-icon">✓</div>
+    <p>Se não participarem das classes de estudos, poderão ficar pequenos, enfraquecidos e velhos novamente. Desejo muito sucesso em suas missões!</p>
+  </div>
+</div>
+
+<!-- ══ CURA ══ -->
+<div class="sec-head" id="cura">
+  <h2>BDL de Cura e Vitalidade</h2>
+  <span class="badge b-av">Versão Avançado</span>
+</div>
+<div class="card">
+  <p class="card-title">Cura, vitalidade e renovação sadia de todas as células do corpo</p>
+  <p class="card-sub">No avançado é concentrada — poder multiplicado dezenas de vezes. Pedida ao Senhor Deus da Luz.</p>
+  <div class="oracao">
+    <strong>Como chamar</strong>
+    <em>"Senhor Deus da Luz, dê-me uma Bola de Luz de cura e vitalidade e renovação sadia de todas as células do corpo."</em><br>
+    Mãos em posição de oração acima da cabeça → contrair a barriga → abrir devagar até 40 cm → esperar encher → enviar sem estreitar os braços.
+  </div>
+  <hr class="div">
+  <p style="font-size:.8rem;font-weight:500;color:var(--ink3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.9rem;">Tipos — Avançado</p>
+  <div class="sub-grid">
+    <div class="sub"><p class="sl">Tipo 1 — dois braços (5 bolas)</p><p>Fazer 5 bolas de 50 cm. Concentrar cada uma a ~15 cm contando até 12. Juntar as 5 em uma só e enviar.</p></div>
+    <div class="sub"><p class="sl">Tipo 2 — uma mão por vez</p><p>Imaginar bola de ~1 m sobre a palma. Concentrar a 15 cm. Alternar as mãos: total de 10 envios (5 por mão).</p></div>
+    <div class="sub"><p class="sl">Tipo 3 — 4 braços astrais + 1 físico</p><p>Imaginar 4 braços astrais junto com o braço físico (= 5 no total). Gerar 5 bolas concentradas, unir em uma e enviar. O mais poderoso dos três tipos.</p></div>
+  </div>
+  <div class="meta" style="margin-top:.75rem;">
+    <div class="meta-item"><label>Quando usar</label><p>Para si, familiares e quem pedir. Tanque de energia, cisterna do quilo, pontos da cabeça.</p></div>
+    <div class="meta-item"><label>Gera karma?</label><p><span class="tag t-ok">Não gera</span></p></div>
+    <div class="meta-item"><label>Concentra?</label><p><span class="tag t-ok">Sim</span> — contando até 12.</p></div>
+  </div>
+</div>
+
+<!-- ══ CRENÇAS ══ -->
+<div class="sec-head" id="crencas">
+  <h2>BDL de Crenças Limitantes</h2>
+  <span class="badge b-inter">Intermediário</span>
+</div>
+<div class="card">
+  <p class="card-title">Reprogramação de padrões negativos repetitivos</p>
+  <p class="card-sub">Pedida ao Senhor Deus da Luz. Não concentra.</p>
+  <div class="oracao">
+    <strong>Oração exata</strong>
+    <em>"Senhor Deus da Luz, dê-me uma Bola de Luz que rastreie, cancele, elimine e resolva todos os programas de crenças limitantes e negativas, e as substitua por programas de crenças positivas, em todos os 4 níveis: primário (desta vida, desde criança), genético (que vem dos ancestrais), histórico (de vidas passadas) e da alma (tudo o que a pessoa é)."</em><br><br>
+    Mãos em posição de oração acima da cabeça → contrair a barriga → abrir devagar até 40 cm → esperar encher → enviar.
+  </div>
+  <div class="sub-grid" style="margin-top:1rem;">
+    <div class="sub"><p class="sl">Nível Primário</p><p>Esta vida — desde a infância até hoje.</p></div>
+    <div class="sub"><p class="sl">Nível Genético</p><p>Padrões herdados dos ancestrais.</p></div>
+    <div class="sub"><p class="sl">Nível Histórico</p><p>Vidas passadas.</p></div>
+    <div class="sub"><p class="sl">Nível da Alma</p><p>Tudo o que a pessoa é em essência.</p></div>
+  </div>
+  <div class="meta" style="margin-top:.75rem;">
+    <div class="meta-item"><label>Quando usar</label><p>Após o Osatoshi individual. Para si, familiares e quem pedir.</p></div>
+    <div class="meta-item"><label>Gera karma?</label><p><span class="tag t-ok">Não gera</span></p></div>
+    <div class="meta-item"><label>Concentra?</label><p><span class="tag t-no">Não concentra</span></p></div>
+  </div>
+</div>
+
+<!-- ══ PURIFICAÇÃO ══ -->
+<div class="sec-head" id="purificacao">
+  <h2>BDL de Purificação</h2>
+  <span class="badge b-av">Avançado</span>
+</div>
+<div class="card">
+  <p class="card-title">Limpeza e eliminação de negatividade — com os 5 círculos</p>
+  <p class="card-sub">Começa grande (~1 m) e concentra contando até 12. A versão "Contendo Tudo" purifica e salva simultaneamente.</p>
+  <div class="oracao">
+    <strong>Como chamar e fazer — passo a passo</strong>
+    1. Dizer: <em>"Senhor Deus da Luz, dê-me uma Bola de Luz de Purificação."</em><br>
+    2. Abrir os braços bem acima da cabeça formando bola de ~90 cm a 1 m.<br>
+    3. Imaginar um dos 5 círculos coloridos à frente (azul, preto, vermelho, dourado ou verde).<br>
+    4. Concentrar a bola contando devagar até <strong>12</strong> — aproximando as mãos lentamente até o tamanho do círculo.<br>
+    5. Enviar sobre o círculo (ou diretamente sobre o alvo).<br>
+    6. Não estreitar os braços antes de jogar.
+  </div>
+  <hr class="div">
+  <p style="font-size:.8rem;font-weight:500;color:var(--ink3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.9rem;">Círculos de envio</p>
+  <div class="circle-grid">
+    <div class="circle-card"><div class="c-dot" style="background:#3a7abf"></div><div><strong>Azul</strong><p>Purificação de pessoas e ambientes. Principal círculo do Garrafa.</p></div></div>
+    <div class="circle-card"><div class="c-dot" style="background:#222"></div><div><strong>Preto</strong><p>Elimina sem salvação e retira resquícios definitivamente.</p></div></div>
+    <div class="circle-card"><div class="c-dot" style="background:#d03a3a"></div><div><strong>Vermelho</strong><p>Vitalidade.</p></div></div>
+    <div class="circle-card"><div class="c-dot" style="background:#c8a820"></div><div><strong>Dourado</strong><p>Prosperidade e abundância.</p></div></div>
+    <div class="circle-card"><div class="c-dot" style="background:#2a8a4a"></div><div><strong>Verde</strong><p>Cura, restauração e potencializa as outras bolas.</p></div></div>
+  </div>
+  <div class="meta" style="margin-top:1rem;">
+    <div class="meta-item"><label>Concentra?</label><p><span class="tag t-ok">Sim</span> — contando até 12.</p></div>
+    <div class="meta-item"><label>Gera karma?</label><p><span class="tag t-warn">Depende</span> — Versão "Contendo Tudo" pelo braço do membro não gera karma.</p></div>
+  </div>
+</div>
+
+<!-- ══ OMAMORI ══ -->
+<div class="sec-head" id="omamori">
+  <h2>BDL com Omamori / Osatoshi Efetivo</h2>
+  <span class="badge b-inter">Intermediário</span>
+</div>
+<div class="card">
+  <p class="card-title">Salvação com as 3 etapas das frases efetivas</p>
+  <p class="card-sub">65 cm — mãos acima da cabeça, inclinar levemente o corpo para trás. Após o envio: mostrar o Omamori ou enviar a BDL do conteúdo do Omamori (40 cm).</p>
+  <div class="oracao">
+    <strong>Como fazer</strong>
+    Ter memorizado o conteúdo das 3 etapas. Juntar as mãos acima da cabeça → inclinar levemente o corpo para trás → abrir devagar até 65 cm → esperar encher → enviar. Depois: mostrar o Omamori ou enviar BDL do conteúdo do Omamori (40 cm, mãos na altura dos olhos).
+  </div>
+  <hr class="div">
+  <p style="font-size:.8rem;font-weight:500;color:var(--ink3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.9rem;">Conteúdo das 3 etapas — o que está na bola</p>
+
+  <div class="pratica">
+    <p class="p-label">Etapa 1 — Espíritos não vingativos</p>
+    <p>Frases de convite ao céu, para quem está aberto a receber. Sempre apontar para o Omamori ao se referir a ele:</p>
+    <ul>
+      <li>"Quem estiver aqui, olhe para cá e suba para o Céu!"</li>
+      <li>"Se for para o lugar descrito neste Omamori, será instruído sobre como subir ao Céu e poderá ir imediatamente!"</li>
+      <li>"Qualquer um pode subir ao Céu, sem exceção! O Céu é um lugar muito bom! Vamos!"</li>
+      <li>"Espírito-guia deste espírito, por favor guie-o."</li>
+      <li>"Você que está com fome e sem forças — se for ao lugar descrito aqui, poderá comer o que quiser até ficar satisfeito, e será ensinado como subir ao Céu."</li>
+    </ul>
+  </div>
+
+  <div class="pratica">
+    <p class="p-label">Etapa 2 — Espíritos vingativos</p>
+    <p>Frases para convencer os resistentes:</p>
+    <ul>
+      <li>"Você que está grudado aqui — olhe para este Omamori!"</li>
+      <li>"Se conseguir ler este Omamori, terá forças de cem a mil vezes mais — e poderá então fazer facilmente o que não conseguiu até hoje."</li>
+      <li>"Leiam e façam como está escrito aqui. Espírito-guia de cada um desses espíritos, por favor guiem-nos."</li>
+      <li>Além das frases listadas, podem-se criar mais — mas sempre começar com: "você também pode subir para o Céu!"</li>
+    </ul>
+    <p style="margin-top:.5rem;font-size:var(--fs-xs);color:var(--ink3);">Usar frases curtas e vocabulário simples — muitos espíritos no inferno têm pouca instrução ou são analfabetos.</p>
+  </div>
+
+  <div class="pratica">
+    <p class="p-label">Etapa 3 — Os que parecem sem recuperação</p>
+    <p>Para os que não foram salvos nas 2 etapas anteriores. Oração ao Senhor Deus da Luz:</p>
+    <ul>
+      <li>"SDL, Criador de todas as coisas do grande Universo, Origem de tudo e de todos — perdoa os carmas acumulados por aqueles que estão me perturbando."</li>
+      <li>"Dê a esses espíritos o poder para que possam ler este Omamori."</li>
+      <li>"Por favor, guia-os e faz deles filhos de Deus nobres e purificados, capazes de servi-Lo."</li>
+    </ul>
+    <p style="margin-top:.5rem;font-size:var(--fs-xs);color:var(--ink3);">Essa oração é repetida 3 vezes. Modo de uso: escolher frases da Etapa 1 → algumas da Etapa 2 → finalizar com a Etapa 3.</p>
+  </div>
+
+  <div class="meta" style="margin-top:.5rem;">
+    <div class="meta-item"><label>Autolimpeza diária</label><p>Enviar para si mesmo(a) todos os dias — ao chegar da rua ou antes de dormir.</p></div>
+    <div class="meta-item"><label>Gera karma?</label><p><span class="tag t-no">Atenção</span> — Usar para não-família sem consentimento gera karma.</p></div>
+  </div>
+</div>
+
+<!-- ══ MANTO ══ -->
+<div class="sec-head" id="manto">
+  <h2>Manto de Luz de Proteção</h2>
+  <span class="badge b-spec">Específica</span>
+</div>
+<div class="card">
+  <p class="card-title">Proteção de locais após o Osatoshi</p>
+  <p class="card-sub">Recebido do Senhor Deus da Luz — ao final de Osatoshi de lugar, empresa ou cercanias</p>
+  <span class="source-tag">Apostila de Procedimentos de Como Escrever Osatoshis Específicos · p. 7 e p. 17</span>
+  <div class="oracao">
+    <strong>Oração e como fazer</strong>
+    <em>"Senhor Deus da Luz, me dê um manto de proteção para esse local."</em><br>
+    Imaginar o corpo bem grande → receber o manto com as duas mãos, palmas para cima → colocá-lo sobre o local imaginando-o cobrindo tudo → receber mentalmente centenas de pequenos Omamoris nas mãos e espalhá-los sobre o manto.
+  </div>
+  <div class="meta" style="margin-top:.85rem;">
+    <div class="meta-item"><label>Quando usar</label><p>Ao final de Osatoshi de lugar, cercanias ou empresa — depois que todos os espíritos foram salvos.</p></div>
+  </div>
+</div>
+
+<!-- ══ ESPECÍFICAS ══ -->
+<div class="sec-head" id="especificas">
+  <h2>BDL Específicas</h2>
+  <span class="badge b-spec">Uso pontual</span>
+</div>
+<div class="card">
+  <p class="card-title">BDL de Limpeza da Alma e do Corpo-Mente</p>
+  <p class="card-sub">Usos específicos da BDL de Purificação com método de medição</p>
+  <span class="source-tag">Apostila Avançado Módulo III · p. 4–5</span>
+  <div class="sub-grid">
+    <div class="sub"><p class="sl">Limpeza da alma</p><p>Medir o tamanho da alma com a BDL do Histórico. Medir a parte escura. Se a mão abrir: 3 BDL de Purificação até zerar. Depois: BDL de 80 cm (MFDC + MCFRF) para fortalecer.</p></div>
+    <div class="sub"><p class="sl">Limpeza do corpo e mente</p><p>Para quem recebeu Osatoshis mas não muda de comportamento. Verificar tamanho da parte escura do corpo-mente. Se a mão abrir: 3 BDL de Purificação até zerar. Depois: 3 BDL de cura e vitalidade.</p></div>
+  </div>
+</div>
+
+<!-- ══ REGRAS GERAIS ══ -->
+<div class="sec-head" id="regras">
+  <h2>Regras Gerais</h2>
+  <span class="badge b-todos">Referência</span>
+</div>
+<div class="card">
+  <p class="card-title">Pontos essenciais sobre todas as BDL</p>
+  <div class="alert alert-mint" style="margin-top:0;"><div class="alert-icon">✓</div><p>A bola <strong>não pode tocar o corpo</strong> — ela se quebrará. Não mover os dedos nem estreitar os braços antes de jogar. Para bolas grandes (65 cm+), inclinar levemente o corpo para trás.</p></div>
+  <div class="alert alert-danger"><div class="alert-icon">!</div><p>Usar BDL de Osatoshi para não-família sem consentimento, ou realizar salvação espiritual sem informar a pessoa sobre Deus e o mundo espiritual, gera <strong>transferência de karma</strong>.</p></div>
+  <div class="alert alert-warn" style="margin-bottom:0;"><div class="alert-icon">!</div><p>BDL que <strong>pedimos ao SDL</strong> (versão atual): Cura e vitalidade · Crenças limitantes · Manto de proteção · BDL do Histórico da Alma · BDL de Restauração. As demais são criadas pelo próprio aluno com o conteúdo memorizado.</p></div>
+</div>
+
+</main>
+
+<footer>
+  <div class="footer-author">Compilado e organizado por Paula Saccardi</div>
+  <div>
+    Material de estudo pessoal · baseado nas apostilas oficiais da Associação Shinri<br>
+    <a href="https://www.osatoshi.com.br/" target="_blank">osatoshi.com.br</a> ·
+    <a href="https://www.god-law.com/" target="_blank">god-law.com · Japão</a>
+  </div>
+  <div class="footer-disclaimer">
+    ⚠️ Este guia é de uso particular e não substitui as apostilas oficiais nem os ensinamentos da professora.<br>
+    As informações aqui contidas baseiam-se nas apostilas da Associação Shinri disponíveis até a data de compilação.
+  </div>
+</footer>
+
+<a href="#" id="back-to-top" style="position:fixed;bottom:1.5rem;right:1.5rem;width:48px;height:48px;border-radius:50%;background:var(--blue-dark);color:var(--mint);display:flex;align-items:center;justify-content:center;font-size:1.4rem;text-decoration:none;box-shadow:0 4px 14px rgba(18,40,32,0.3);z-index:200;opacity:0;transition:opacity .3s;pointer-events:none;">↑</a>
+</div>
+
+<!-- ===== OSATOSHI VIEW ===== -->
+<div class="osatoshi-view" id="osatoshi-view">
+<button class="back-portal" onclick="showView('portal')">← Portal</button>
+<div id="osatoshi-root"></div>
+</div>
+
+<script>
+function showView(view) {
+  document.getElementById('portal-view').classList.remove('active');
+  document.getElementById('bdl-view').classList.remove('active');
+  document.getElementById('osatoshi-view').classList.remove('active');
+  document.getElementById(view + '-view').classList.add('active');
+  window.scrollTo(0, 0);
+}
+</script>
+
+  <script type="text/babel" data-type="module" data-presets="react">
+    const { useState } = React;
+
+    // ============ ÍCONES (SVG inline para não depender de lib externa) ============
+    const Icon = ({ children, size = 20, color = "currentColor" }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{children}</svg>
+    );
+    const ChevronRight = (p) => <Icon {...p}><polyline points="9 18 15 12 9 6"/></Icon>;
+    const ChevronLeft = (p) => <Icon {...p}><polyline points="15 18 9 12 15 6"/></Icon>;
+    const Home = (p) => <Icon {...p}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></Icon>;
+    const BookOpen = (p) => <Icon {...p}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></Icon>;
+    const Heart = (p) => <Icon {...p}><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></Icon>;
+    const Sparkles = (p) => <Icon {...p}><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/></Icon>;
+    const CheckCircle = (p) => <Icon {...p}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></Icon>;
+    const XCircle = (p) => <Icon {...p}><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></Icon>;
+    const RotateCcw = (p) => <Icon {...p}><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></Icon>;
+    const Menu = (p) => <Icon {...p}><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></Icon>;
+    const X = (p) => <Icon {...p}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></Icon>;
+
+    function OsatoshiApp() {
+      const [currentPage, setCurrentPage] = useState('home');
+      const [menuOpen, setMenuOpen] = useState(false);
+      const [selectedType, setSelectedType] = useState(null);
+      const [selectedEspecifico, setSelectedEspecifico] = useState(null);
+
+      const colors = {
+        primary: '#1A8B8C', secondary: '#5FC2C4', accent: '#FFD166',
+        light: '#E8F4F5', cream: '#FAF7F0', dark: '#0F3D3E',
+        rose: '#E8A4A8', bunkon: '#7B96D4',
+      };
+
+      const pages = [
+        { id: 'home', label: 'Início', icon: Home },
+        { id: 'oracao', label: 'Oração do Solicitante', icon: Heart },
+        { id: 'primeiro', label: 'Primeiro Osatoshi', icon: Sparkles },
+        { id: 'fluxo-simples', label: 'Fluxograma Simples', icon: BookOpen },
+        { id: 'fluxo-nao-vingativo', label: 'Caminho do Não-Vingativo', icon: BookOpen },
+        { id: 'fluxo-vingativo', label: 'Caminho do Vingativo', icon: BookOpen },
+        { id: 'tipos', label: '📚 Individual: Os 12 Tipos', icon: BookOpen },
+        { id: 'especificos-intro', label: '📋 Específicos: Introdução', icon: Sparkles },
+        { id: 'especificos-tipos', label: '📋 Específicos: Os 11 Tipos', icon: BookOpen },
+        { id: 'quiz', label: 'Quiz de Fixação', icon: CheckCircle },
+      ];
+
+      const navigateTo = (page) => {
+        setCurrentPage(page);
+        setMenuOpen(false);
+        setSelectedType(null);
+        setSelectedEspecifico(null);
+        window.scrollTo(0, 0);
+      };
+
+      const DisclaimerBar = () => (
+        <div style={{ background: '#FFF8E1', borderBottom: `1px solid ${colors.accent}`, padding: '0.6rem 1rem', textAlign: 'center', fontSize: '0.75rem', color: colors.dark, lineHeight: '1.4' }}>
+          <strong>⚠️ Guia de estudo particular — uso pessoal e educativo.</strong> Compilado por Paula Saccardi com base nas apostilas oficiais da Associação Shinri. Não substitui as apostilas oficiais nem os ensinamentos da professora.
+        </div>
+      );
+
+      const Header = () => (
+        <div style={{ background: 'white', padding: '0.9rem 1rem', position: 'sticky', top: 0, zIndex: 100, boxShadow: '0 1px 8px rgba(0,0,0,0.06)', borderBottom: `1px solid ${colors.light}` }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxWidth: '900px', margin: '0 auto' }}>
+            <div onClick={() => navigateTo('home')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+              <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: `radial-gradient(circle, ${colors.accent}, ${colors.secondary}, ${colors.primary})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', boxShadow: '0 2px 6px rgba(26,139,140,0.25)' }}>✨</div>
+              <div>
+                <div style={{ color: colors.primary, fontWeight: '700', fontSize: '1rem', letterSpacing: '1.5px' }}>SHINRI</div>
+                <div style={{ color: colors.dark, fontSize: '0.65rem', letterSpacing: '0.5px', opacity: 0.7 }}>Osatoshi Individual · Guia de Estudo</div>
+              </div>
+            </div>
+            <button onClick={() => setMenuOpen(!menuOpen)} style={{ background: 'transparent', border: 'none', color: colors.primary, cursor: 'pointer', padding: '0.3rem' }}>
+              {menuOpen ? <X size={26} /> : <Menu size={26} />}
+            </button>
+          </div>
+          {menuOpen && (
+            <div style={{ maxWidth: '900px', margin: '0.75rem auto 0', background: colors.light, borderRadius: '12px', padding: '0.4rem' }}>
+              {pages.map(p => {
+                const IconComp = p.icon;
+                return (
+                  <div key={p.id} onClick={() => navigateTo(p.id)} style={{ display: 'flex', alignItems: 'center', gap: '0.7rem', padding: '0.7rem 0.9rem', color: currentPage === p.id ? colors.primary : colors.dark, cursor: 'pointer', borderRadius: '8px', background: currentPage === p.id ? 'white' : 'transparent', marginBottom: '0.2rem', fontWeight: currentPage === p.id ? '600' : '400' }}>
+                    <IconComp size={17} />
+                    <span style={{ fontSize: '0.92rem' }}>{p.label}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      );
+
+      const Footer = () => (
+        <div style={{ marginTop: '3rem', padding: '2.5rem 1.5rem 2rem', background: colors.cream, borderTop: `1px solid ${colors.light}`, textAlign: 'center' }}>
+          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+            <div style={{ width: '50px', height: '50px', margin: '0 auto 1rem', borderRadius: '50%', background: `radial-gradient(circle, ${colors.accent}, ${colors.secondary}, ${colors.primary})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem', boxShadow: '0 2px 10px rgba(26,139,140,0.2)' }}>✨</div>
+            <div style={{ color: colors.primary, fontWeight: '700', fontSize: '0.85rem', letterSpacing: '1.5px', marginBottom: '0.4rem' }}>Compilado e organizado por Paula Saccardi</div>
+            <div style={{ color: colors.dark, fontSize: '0.75rem', opacity: 0.75, lineHeight: '1.6', marginBottom: '0.8rem' }}>
+              Material de estudo pessoal · baseado nas apostilas oficiais<br/>da Associação Shinri
+            </div>
+            <div style={{ color: colors.primary, fontSize: '0.75rem', opacity: 0.8, marginBottom: '1rem' }}>osatoshi.com.br · god-law.com (Japão)</div>
+            <div style={{ width: '40px', height: '2px', background: colors.secondary, margin: '0 auto 1rem', opacity: 0.5 }} />
+            <div style={{ color: colors.dark, fontSize: '0.7rem', opacity: 0.6, fontStyle: 'italic', lineHeight: '1.6', maxWidth: '500px', margin: '0 auto' }}>
+              ⚠️ Este guia é de uso particular e não substitui as apostilas oficiais nem os ensinamentos da professora. As informações aqui contidas baseiam-se nas apostilas da Associação Shinri disponíveis até a data de compilação.
+            </div>
+          </div>
+        </div>
+      );
+
+      const HomePage = () => (
+        <div style={{ padding: '2rem 1.5rem', maxWidth: '900px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            <div style={{ width: '100px', height: '100px', margin: '0 auto 1rem', borderRadius: '50%', background: `radial-gradient(circle, ${colors.accent}, ${colors.secondary}, ${colors.primary})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3rem', boxShadow: '0 4px 20px rgba(26,139,140,0.3)' }}>🙏</div>
+            <h1 style={{ color: colors.dark, fontSize: '1.8rem', marginBottom: '0.5rem', fontWeight: 'bold' }}>Osatoshi Individual</h1>
+            <p style={{ color: colors.primary, fontSize: '0.9rem', fontStyle: 'italic' }}>Associação Shinri · Guia de Estudo</p>
+          </div>
+          <div style={{ background: 'white', borderLeft: `4px solid ${colors.primary}`, padding: '1.25rem', borderRadius: '8px', marginBottom: '1.5rem', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+            <p style={{ color: colors.dark, lineHeight: '1.7', fontSize: '0.95rem' }}>
+              <strong>O Osatoshi Individual</strong> é a salvação dos espíritos que perturbam uma pessoa, por razões geradas em vidas passadas e na vida atual. Por meio dele, conversa-se com esses espíritos, faz-se com que reparem o que causaram, e os encaminha para o céu ou mundo divino.
+            </p>
+          </div>
+          <h2 style={{ color: colors.primary, fontSize: '1.05rem', marginBottom: '1rem', marginTop: '2rem' }}>📚 Navegue pelo conteúdo</h2>
+          <div style={{ display: 'grid', gap: '0.75rem' }}>
+            {pages.filter(p => p.id !== 'home').map(p => {
+              const IconComp = p.icon;
+              return (
+                <div key={p.id} onClick={() => navigateTo(p.id)} style={{ background: 'white', border: `2px solid ${colors.light}`, borderRadius: '12px', padding: '1rem', display: 'flex', alignItems: 'center', gap: '1rem', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                  <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: `linear-gradient(135deg, ${colors.secondary}, ${colors.primary})`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <IconComp size={20} color="white" />
+                  </div>
+                  <div style={{ flex: 1, color: colors.dark, fontWeight: '600', fontSize: '0.95rem' }}>{p.label}</div>
+                  <ChevronRight size={18} color={colors.primary} />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+
+      const OracaoPage = () => (
+        <div style={{ padding: '2rem 1.5rem', maxWidth: '900px', margin: '0 auto' }}>
+          <h1 style={{ color: colors.dark, fontSize: '1.6rem', marginBottom: '1rem', textAlign: 'center' }}>🙏 Oração do Solicitante</h1>
+          <p style={{ color: colors.primary, textAlign: 'center', marginBottom: '2rem', fontSize: '0.95rem', fontStyle: 'italic' }}>Sr. Deus da Luz, deus Su</p>
+          <div style={{ background: `linear-gradient(135deg, ${colors.cream}, white)`, padding: '2rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.06)', border: `1px solid ${colors.light}`, marginBottom: '1.5rem' }}>
+            <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+              <div style={{ display: 'inline-block', padding: '0.4rem 1rem', background: colors.primary, color: 'white', borderRadius: '20px', fontSize: '0.85rem' }}>Repetir 3 vezes</div>
+            </div>
+            <div style={{ color: colors.dark, lineHeight: '2', fontSize: '1.05rem', fontStyle: 'italic' }}>
+              <p style={{ marginBottom: '1rem' }}><strong style={{ color: colors.primary }}>Sr. Deus da Luz, deus Su,</strong></p>
+              <p style={{ marginBottom: '1rem' }}>Perdoe-me, por favor, pelos carmas acumulados em minha alma e corpo.</p>
+              <p style={{ marginBottom: '1rem' }}>E, por favor, guie-me e faça de mim um(a) filho(a) de Deus nobre e purificado(a) para poder servir a Ti.</p>
+              <p style={{ marginBottom: '1rem' }}><strong style={{ color: colors.primary }}>Sr. Deus da Luz,</strong></p>
+              <p>Por favor, perdoe-me e purifique-me, protegendo-me e fazendo de mim um(a) filho(a) nobre e purificado(a).</p>
+            </div>
+          </div>
+          <div style={{ background: colors.light, padding: '1.25rem', borderRadius: '12px', borderLeft: `4px solid ${colors.accent}` }}>
+            <p style={{ color: colors.dark, fontSize: '0.9rem', lineHeight: '1.6' }}>
+              💡 <strong>Quando usar:</strong> oração de purificação prévia, feita pelo solicitante antes do Osatoshi. Também aparece no 2º passo da prática "Como receber conselhos do nosso Deus-guia (Hontai)" — Intermediário Módulo II.
+            </p>
+          </div>
+        </div>
+      );
+
+      const PrimeiroPage = () => {
+        const blocos = [
+          { num: '1', icon: '🌟', title: 'Fortalecimento da Alma', subtitle: 'Alma principal e alma secundária',
+            desc: 'Procedimento que visa mudança interna, melhoramento de comportamentos e resistência aos ataques espirituais. Por meio dele descobre-se a natureza da alma:',
+            items: [
+              { label: 'Alma humana', detail: 'com vidas passadas' },
+              { label: 'Bunkon sem vidas passadas', detail: 'pedaço de um deus que desceu direto do mundo divino' },
+              { label: 'Bunkon com vidas passadas', detail: 'pedaço de um deus que já encarnou antes' }
+            ], obs: 'São feitas até 3 regressões até descobrir se a alma esteve ou não no mundo divino.' },
+          { num: '2', icon: '⚡', title: 'Fortalecimento do(a) Hontai', subtitle: 'Apenas se a pessoa for bunkon',
+            desc: 'O Hontai é o deus-guia. Quando a pessoa é bunkon (com ou sem vidas passadas), o Hontai é chamado e:',
+            items: [
+              { label: 'Fortalecido', detail: 'participando das classes Shinri' },
+              { label: 'Troca o bunkon', detail: 'voltando à época em que o colocou' },
+              { label: 'Revela a missão', detail: 'da pessoa que recebe o Osatoshi (vai no relatório)' }
+            ], obs: 'Se o Hontai for de outro planeta → trocar por um Hontai do planeta Terra (mais experiente com as questões terrenas).' },
+          { num: '3', icon: '👻', title: 'Salvação do(a) Antigo(a) Dono(a) do Corpo', subtitle: 'Espírito que ocupava o corpo antes da alma atual',
+            desc: 'Após fortalecer alma, Hontai e alma secundária, salva-se o antigo dono do corpo. Esse espírito pode ter deixado memórias e relações pendentes que se manifestam como atritos na vida atual.',
+            items: [
+              { label: 'Acolher', detail: '"Está sofrendo?" → oração de gratidão' },
+              { label: 'Investigar', detail: 'onde estava, que treinamento fazia' },
+              { label: 'Regressão + MCFRF', detail: 'refazer vida, reparar, céu' }
+            ], obs: null }
+        ];
+        const oracoes = [
+          { title: 'Oração de Início (Condutor)', text: 'Senhor Deus da Luz, muito, muito agradecido(a). Permita-me fazer Osatoshi para o(a) [nome completo]. Por favor traga os espíritos que o(a) perturbavam e que foram salvos no Osatoshi mediado em [data]. E faça com que apareçam para o espelho [nome]. A todos os deuses que trabalham nesse Osatoshi, peço sua proteção, orientação, os arranjos necessários e a ajuda com as bolas de Luz. Muito agradecido(a).' },
+          { title: 'Oração de Espelhamento (se for autoespelho)', text: 'Senhor Deus da Luz, por favor, utilize-me como espelho do Osatoshi do(a) [nome]. Permita-me que sejam visualizados apenas os espíritos que foram salvos no Osatoshi do dia [data]. E que eu acesse apenas aquilo que for do Osatoshi do(a) [nome] e que afastem qualquer interferência mental ou espiritual...' },
+          { title: 'Oração de Término', text: 'Senhor Deus da Luz, muito, muito agradecido(a) pela permissão concedida e a proteção recebida durante essa salvação. A todos os deuses que me auxiliaram nessa salvação, muitíssimo agradecido(a).' }
+        ];
+        return (
+          <div style={{ padding: '2rem 1.5rem', maxWidth: '900px', margin: '0 auto' }}>
+            <h1 style={{ color: colors.dark, fontSize: '1.6rem', marginBottom: '1rem', textAlign: 'center' }}>🌱 Primeiro Osatoshi Individual</h1>
+            <p style={{ color: colors.primary, textAlign: 'center', marginBottom: '2rem', fontSize: '0.95rem' }}>O que torna ele diferente dos demais</p>
+            <div style={{ background: 'white', borderLeft: `4px solid ${colors.primary}`, padding: '1.25rem', borderRadius: '8px', marginBottom: '1.5rem', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+              <p style={{ color: colors.dark, lineHeight: '1.7' }}>
+                No <strong>primeiro Osatoshi</strong> de uma pessoa, além de salvar os espíritos perturbadores, fazem-se <strong>3 procedimentos extras</strong> que descobrem a natureza da alma e fortalecem a pessoa.
+              </p>
+            </div>
+            <div style={{ background: '#FFF8E1', padding: '1rem 1.25rem', borderRadius: '12px', marginBottom: '1.5rem', borderLeft: `4px solid ${colors.accent}` }}>
+              <p style={{ color: colors.dark, fontSize: '0.9rem', lineHeight: '1.6' }}>
+                ⭐ <strong>Importante:</strong> Esse bloco especial acontece APENAS no primeiro Osatoshi (e também em harmonização entre duas pessoas e Osatoshi de espírito vivo).
+              </p>
+            </div>
+            {blocos.map((p, i) => (
+              <div key={i} style={{ background: 'white', borderRadius: '16px', padding: '1.5rem', marginBottom: '1.25rem', boxShadow: '0 2px 12px rgba(0,0,0,0.06)', border: `1px solid ${colors.light}` }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+                  <div style={{ width: '50px', height: '50px', borderRadius: '50%', background: `linear-gradient(135deg, ${colors.secondary}, ${colors.primary})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold', fontSize: '1.3rem', flexShrink: 0 }}>{p.num}</div>
+                  <div>
+                    <h3 style={{ color: colors.dark, fontSize: '1.1rem', marginBottom: '0.2rem' }}>{p.icon} {p.title}</h3>
+                    <p style={{ color: colors.primary, fontSize: '0.85rem' }}>{p.subtitle}</p>
+                  </div>
+                </div>
+                <p style={{ color: colors.dark, lineHeight: '1.6', marginBottom: '1rem', fontSize: '0.95rem' }}>{p.desc}</p>
+                <div style={{ background: colors.light, padding: '1rem', borderRadius: '10px' }}>
+                  {p.items.map((item, j) => (
+                    <div key={j} style={{ display: 'flex', gap: '0.5rem', marginBottom: j < p.items.length - 1 ? '0.6rem' : 0, fontSize: '0.9rem' }}>
+                      <span style={{ color: colors.primary, fontWeight: 'bold' }}>•</span>
+                      <span style={{ color: colors.dark }}><strong>{item.label}:</strong> {item.detail}</span>
+                    </div>
+                  ))}
+                </div>
+                {p.obs && (
+                  <div style={{ marginTop: '0.75rem', padding: '0.75rem', background: '#FFF8E1', borderRadius: '8px', fontSize: '0.85rem', color: colors.dark, borderLeft: `3px solid ${colors.accent}` }}>💡 {p.obs}</div>
+                )}
+              </div>
+            ))}
+            <h2 style={{ color: colors.primary, fontSize: '1.15rem', marginTop: '2rem', marginBottom: '1rem' }}>🙏 Orações dentro do método</h2>
+            {oracoes.map((o, i) => (
+              <details key={i} style={{ background: 'white', padding: '1rem', borderRadius: '10px', marginBottom: '0.75rem', border: `1px solid ${colors.light}`, cursor: 'pointer' }}>
+                <summary style={{ color: colors.primary, fontWeight: '600', fontSize: '0.95rem' }}>▸ {o.title}</summary>
+                <p style={{ color: colors.dark, lineHeight: '1.7', marginTop: '0.75rem', fontSize: '0.9rem', fontStyle: 'italic' }}>{o.text}</p>
+              </details>
+            ))}
+          </div>
+        );
+      };
+
+      const FluxoSimplesPage = () => {
+        const steps = [
+          { num: 1, icon: '🙏', title: 'Oração de Início', desc: 'Pedir permissão ao Senhor Deus da Luz' },
+          { num: 2, icon: '👋', title: 'Chamar o Espírito', desc: '"Apareça, por favor"' },
+          { num: 3, icon: '❓', title: 'Pergunta-chave', desc: '"Você é um espírito humano?"' },
+          { num: 4, icon: '💬', title: 'Conversar', desc: 'Tirar sofrimento, mostrar erro, reparar dano, MCFRF' },
+          { num: 5, icon: '🔄', title: 'REGRESSÃO ⭐', desc: 'OBRIGATÓRIA em todos os tipos — revela se é humano ou bunkon' },
+          { num: 6, icon: '☁️', title: 'Encaminhar', desc: 'Céu (humanos/animais/bebês) ou Mundo Divino (bunkons/deuses)' },
+          { num: 7, icon: '🔁', title: 'Chamar o Próximo', desc: 'Geralmente aparecem 3-4 grupos' },
+          { num: 8, icon: '✨', title: 'Bola de Luz Final', desc: 'Trocar crenças limitantes por positivas + manto de proteção' },
+          { num: 9, icon: '🙏', title: 'Oração de Término', desc: 'Agradecer a Deus e aos deuses' }
+        ];
+        return (
+          <div style={{ padding: '2rem 1.5rem', maxWidth: '900px', margin: '0 auto' }}>
+            <h1 style={{ color: colors.dark, fontSize: '1.6rem', marginBottom: '0.5rem', textAlign: 'center' }}>🗺️ Fluxograma Simples</h1>
+            <p style={{ color: colors.primary, textAlign: 'center', marginBottom: '2rem', fontSize: '0.95rem' }}>Visão geral do método</p>
+            {steps.map((step, i) => (
+              <div key={i} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
+                  <div style={{ width: '50px', height: '50px', borderRadius: '50%', background: step.num === 5 ? `linear-gradient(135deg, ${colors.accent}, ${colors.rose})` : `linear-gradient(135deg, ${colors.secondary}, ${colors.primary})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', boxShadow: '0 2px 8px rgba(26,139,140,0.3)' }}>{step.icon}</div>
+                  {i < steps.length - 1 && <div style={{ width: '2px', height: '40px', background: `linear-gradient(to bottom, ${colors.primary}, ${colors.secondary})`, marginTop: '4px', marginBottom: '4px' }} />}
+                </div>
+                <div style={{ flex: 1, background: step.num === 5 ? '#FFFBF0' : 'white', padding: '1rem 1.25rem', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', border: step.num === 5 ? `2px solid ${colors.accent}` : `1px solid ${colors.light}`, marginBottom: i < steps.length - 1 ? '0.5rem' : 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.3rem' }}>
+                    <span style={{ background: colors.light, color: colors.primary, padding: '0.15rem 0.5rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 'bold' }}>{step.num}</span>
+                    <strong style={{ color: colors.dark, fontSize: '1rem' }}>{step.title}</strong>
+                  </div>
+                  <p style={{ color: colors.dark, fontSize: '0.9rem', opacity: 0.85 }}>{step.desc}</p>
+                </div>
+              </div>
+            ))}
+            <div style={{ marginTop: '2rem', padding: '1.25rem', background: colors.cream, borderRadius: '12px', borderLeft: `4px solid ${colors.accent}` }}>
+              <p style={{ color: colors.dark, lineHeight: '1.6', fontSize: '0.9rem' }}>
+                ⭐ <strong>MCFRF</strong> = Método de Construir uma Família Repleta de Felicidade. É praticado dentro do Osatoshi como bola de Luz.
+              </p>
+            </div>
+          </div>
+        );
+      };
+
+      const FluxoNaoVingativoPage = () => {
+        const steps = [
+          { icon: '😌', title: 'Acolher', desc: '"Então, você veio porque queria ser salvo, não é?" — Sim. "Você está sofrendo?"' },
+          { icon: '🤲', title: 'Tirar o sofrimento', desc: 'Se sim → "Senhor Deus da Luz, muito, muito agradecido" (5x devagar, orar JUNTO com o espírito)' },
+          { icon: '💬', title: 'Investigar com gentileza', desc: 'Onde estava? O que estava fazendo? Que relação tem com a pessoa?' },
+          { icon: '⭐', title: 'REGRESSÃO (obrigatória)', desc: '"Lembre-se de quando era criança... bebê... no ventre da mãe... antes disso, onde estava?"', highlight: true },
+          { icon: '🌟', title: 'BIFURCAÇÃO', desc: 'Se respondeu MUNDO ASTRAL → segue como humano. Se respondeu MUNDO DIVINO → é BUNKON → muda para método de bunkon', bunkon: true },
+          { icon: '🔄', title: 'Refazer vida passada', desc: 'Voltar à época do erro e refazer corretamente, pelo critério do céu' },
+          { icon: '🌸', title: 'Praticar MCFRF', desc: 'Bola de Luz com o Método de Construir Família Repleta de Felicidade' },
+          { icon: '🔧', title: 'Reparar dano', desc: 'Consertar tudo o que causou à pessoa (e à família) e retirar todos os resquícios' },
+          { icon: '☁️', title: 'Encaminhar pro céu', desc: '"Adeus e felicidades!" 👋' }
+        ];
+        return (
+          <div style={{ padding: '2rem 1.5rem', maxWidth: '900px', margin: '0 auto' }}>
+            <h1 style={{ color: colors.dark, fontSize: '1.6rem', marginBottom: '0.5rem', textAlign: 'center' }}>😌 Caminho do Não-Vingativo</h1>
+            <p style={{ color: colors.primary, textAlign: 'center', marginBottom: '1.5rem', fontSize: '0.95rem' }}>Espíritos que querem ser salvos</p>
+            <div style={{ background: '#F0F7F0', borderLeft: `4px solid #86B79E`, padding: '1.25rem', borderRadius: '8px', marginBottom: '1.5rem' }}>
+              <p style={{ color: colors.dark, lineHeight: '1.7', fontSize: '0.95rem' }}>
+                ⭐ <strong>Caminho suave:</strong> esses espíritos não resistem. São espíritos de lugar, de rua, ancestrais, encostos sofrendo, bebês abortados, animais ou crianças que não conseguiram crescer. O acolhimento é central.
+              </p>
+            </div>
+            <div style={{ background: 'white', padding: '1rem', borderRadius: '12px', marginBottom: '1.5rem', textAlign: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+              <p style={{ color: colors.primary, fontWeight: 'bold', fontSize: '0.95rem' }}>É espírito humano? SIM → Está vingativo? NÃO</p>
+              <p style={{ color: colors.dark, fontSize: '0.85rem', marginTop: '0.3rem', opacity: 0.7 }}>↓ entra no caminho do não-vingativo</p>
+            </div>
+            {steps.map((step, i) => (
+              <div key={i} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
+                  <div style={{ width: '50px', height: '50px', borderRadius: '50%', background: step.bunkon ? `linear-gradient(135deg, ${colors.bunkon}, ${colors.primary})` : step.highlight ? `linear-gradient(135deg, ${colors.accent}, ${colors.rose})` : `linear-gradient(135deg, ${colors.secondary}, ${colors.primary})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>{step.icon}</div>
+                  {i < steps.length - 1 && <div style={{ width: '2px', height: '40px', background: `linear-gradient(to bottom, ${colors.primary}, ${colors.secondary})`, marginTop: '4px', marginBottom: '4px' }} />}
+                </div>
+                <div style={{ flex: 1, background: step.bunkon ? '#F0F4FA' : step.highlight ? '#FFFBF0' : 'white', padding: '1rem 1.25rem', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', border: step.bunkon ? `2px solid ${colors.bunkon}` : step.highlight ? `2px solid ${colors.accent}` : `1px solid ${colors.light}`, marginBottom: i < steps.length - 1 ? '0.5rem' : 0 }}>
+                  <strong style={{ color: colors.dark, fontSize: '1rem', display: 'block', marginBottom: '0.3rem' }}>{step.title}</strong>
+                  <p style={{ color: colors.dark, fontSize: '0.9rem', opacity: 0.85, lineHeight: '1.5' }}>{step.desc}</p>
+                </div>
+              </div>
+            ))}
+            <div style={{ marginTop: '2rem', padding: '1.25rem', background: '#F0F4FA', borderRadius: '12px', borderLeft: `4px solid ${colors.bunkon}` }}>
+              <p style={{ color: colors.dark, lineHeight: '1.7', fontSize: '0.9rem' }}>
+                🌟 <strong>Regra fundamental:</strong> a regressão é obrigatória em TODOS os tipos para descobrirmos se a alma é humana ou de um bunkon. Bunkons podem aparecer em qualquer categoria — inclusive bebês abortados, animais e crianças que não cresceram.
+              </p>
+            </div>
+          </div>
+        );
+      };
+
+      const FluxoVingativoPage = () => {
+        const steps = [
+          { icon: '⚠️', title: 'Resistência inicial?', desc: 'Se o vingativo NÃO QUER NOS OUVIR → parte introdutória 1.3 (suavizar antes)', highlight: true },
+          { icon: '🔍', title: 'Investigar o ódio', desc: 'Por que está vingativo? O que aconteceu? Quem fez mal a ele(a)?' },
+          { icon: '⭐', title: 'REGRESSÃO (obrigatória)', desc: '"Lembre-se do início da sua trajetória, desde quando recebeu a vida no mundo celestial até hoje. Antes do ventre da mãe, onde estava?"', highlight: true },
+          { icon: '🌟', title: 'BIFURCAÇÃO', desc: 'Se MUNDO ASTRAL → segue como humano vingativo. Se MUNDO DIVINO → é BUNKON vingativo → chamar o Hontai, fortalecer, recolher', bunkon: true },
+          { icon: '🔑', title: 'DESCOBERTA-CHAVE', desc: '"Olhe bem para a alma de [pessoa]. Será que é a mesma alma da pessoa que lhe fez mal?" → Quase sempre o espírito descobre que ELE iniciou tudo no começo (era do acerto de contas dos carmas) — o ódio se dissolve, há perdão', highlight: true },
+          { icon: '🌸', title: 'Refazer vida + MCFRF', desc: 'Voltar à época do erro e refazer corretamente' },
+          { icon: '🔧', title: 'Reparar TUDO', desc: 'Consertar dano à pessoa, à família, retirar TODOS os resquícios' },
+          { icon: '☁️', title: 'Encaminhar', desc: 'Céu (se humano) ou Mundo Divino (se bunkon). "Adeus e felicidades!"' }
+        ];
+        return (
+          <div style={{ padding: '2rem 1.5rem', maxWidth: '900px', margin: '0 auto' }}>
+            <h1 style={{ color: colors.dark, fontSize: '1.6rem', marginBottom: '0.5rem', textAlign: 'center' }}>😡 Caminho do Vingativo</h1>
+            <p style={{ color: colors.primary, textAlign: 'center', marginBottom: '1.5rem', fontSize: '0.95rem' }}>O mais frequente nos Osatoshis</p>
+            <div style={{ background: '#FFF4F4', borderLeft: `4px solid ${colors.rose}`, padding: '1.25rem', borderRadius: '8px', marginBottom: '1.5rem' }}>
+              <p style={{ color: colors.dark, lineHeight: '1.7', fontSize: '0.95rem' }}>
+                ⭐ <strong>Princípio-chave:</strong> o mestre Utsumi descobriu que em todos os casos, ao regredir até o INÍCIO da trajetória, o espírito percebe que <strong>foi ele mesmo quem iniciou a briga</strong> em algum momento, e a pessoa que está perturbando hoje foi sua vítima primeira. Isso dissolve o ódio. Por isso esta era é chamada de <em>"era do acerto de contas dos carmas"</em>.
+              </p>
+            </div>
+            <div style={{ background: 'white', padding: '1rem', borderRadius: '12px', marginBottom: '1.5rem', textAlign: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+              <p style={{ color: colors.primary, fontWeight: 'bold', fontSize: '0.95rem' }}>É espírito humano? SIM → Está vingativo? SIM</p>
+              <p style={{ color: colors.dark, fontSize: '0.85rem', marginTop: '0.3rem', opacity: 0.7 }}>↓ entra no caminho do vingativo</p>
+            </div>
+            {steps.map((step, i) => (
+              <div key={i} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
+                  <div style={{ width: '50px', height: '50px', borderRadius: '50%', background: step.bunkon ? `linear-gradient(135deg, ${colors.bunkon}, ${colors.primary})` : step.highlight ? `linear-gradient(135deg, ${colors.accent}, ${colors.rose})` : `linear-gradient(135deg, ${colors.secondary}, ${colors.primary})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>{step.icon}</div>
+                  {i < steps.length - 1 && <div style={{ width: '2px', height: '40px', background: `linear-gradient(to bottom, ${colors.primary}, ${colors.secondary})`, marginTop: '4px', marginBottom: '4px' }} />}
+                </div>
+                <div style={{ flex: 1, background: step.bunkon ? '#F0F4FA' : step.highlight ? '#FFFBF0' : 'white', padding: '1rem 1.25rem', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', border: step.bunkon ? `2px solid ${colors.bunkon}` : step.highlight ? `2px solid ${colors.accent}` : `1px solid ${colors.light}`, marginBottom: i < steps.length - 1 ? '0.5rem' : 0 }}>
+                  <strong style={{ color: colors.dark, fontSize: '1rem', display: 'block', marginBottom: '0.3rem' }}>{step.title}</strong>
+                  <p style={{ color: colors.dark, fontSize: '0.9rem', opacity: 0.85, lineHeight: '1.5' }}>{step.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+      };
+
+      const BLOCO_BUNKON_PASSOS = [
+        'Chamar o Hontai desse bunkon',
+        'Fortalecer o Hontai (participar das classes Shinri)',
+        'Hontai recolhe o bunkon',
+        'Bunkon repara o dano e recebe nova missão',
+        'Sobe para o MUNDO DIVINO 🌟 (não para o céu)'
+      ];
+
+      const tipos = [
+        { id: 1, num: '1.1', emoji: '😌', cor: colors.secondary, titulo: 'Espíritos Humanos NÃO-Vingativos', subtitulo: 'O caminho suave', quem: 'Espíritos de lugar, de rua, ancestrais, encostos que querem ser salvos', perguntaChave: '"Então, você veio porque queria ser salvo, não é?" — Sim', passos: ['Pergunta se está sofrendo, com sono, fome, ou se há alguém o prendendo', 'Se sim → oração "Senhor Deus da Luz, muito, muito agradecido" (5x devagar, juntos)', 'Conversar e investigar a história', 'REGRESSÃO (obrigatória) — descobre se é humano ou bunkon ⭐', 'Refazer vida passada + MCFRF', 'Reparar dano + Encaminhar pro céu'], subtipos: ['🏠 Espírito de lugar', '🛣️ Espírito de rua', '👴 Ancestral'], destino: 'Céu ☁️ (ou Mundo Divino, se for bunkon)', temBunkon: true },
+        { id: 2, num: '1.2', emoji: '😡', cor: '#D67373', titulo: 'Espíritos Humanos VINGATIVOS', subtitulo: 'O mais frequente', quem: 'Espíritos de pessoas que sofreram nossos atos em vidas passadas e nutrem ódio', perguntaChave: '"Você está vingativo?" — Sim', passos: ['Se não quer nos ouvir → seção 1.3 (parte introdutória)', 'Investigar o ódio', 'REGRESSÃO ⭐ até o início da trajetória — descobre se é humano ou bunkon', 'Descoberta: foi ELE quem iniciou tudo → ódio se dissolve', 'Olhar a alma da pessoa → reconhecer se é a mesma', 'Refazer + MCFRF + Reparar TUDO', 'Céu ou Mundo Divino (se bunkon)'], atencao: 'Na regressão pode revelar ser BUNKON vingativo (estava no mundo divino) → muda para método de bunkon', destino: 'Céu ☁️ ou Mundo Divino 🌟', temBunkon: true },
+        { id: 3, num: '2.1', emoji: '🐾', cor: '#A8C887', titulo: 'Espíritos de Animais NÃO-Vingativos', subtitulo: 'Querem ser salvos ou estão sofrendo', quem: 'Espíritos de animais que estão sofrendo ou grudados na pessoa', perguntaChave: '"Você é um espírito de animal?" — Sim', passos: ['Acolher e tirar sofrimento', 'Investigar relação com a pessoa', 'REGRESSÃO (obrigatória) ⭐ — pode revelar alma humana em corpo animal, ou BUNKON', 'Refazer vida + MCFRF', 'Reparar + Encaminhar pro céu'], destino: 'Céu ☁️ (ou Mundo Divino, se for bunkon)', temBunkon: true },
+        { id: 4, num: '2.2', emoji: '🐺', cor: '#C89A3F', titulo: 'Espíritos de Animais VINGATIVOS', subtitulo: 'Atenção: 3 verificações antes!', quem: 'Animais que se mostram vingativos — mas pode não ser o que parece', perguntaChave: '"Você é um espírito de animal?" — Sim, mas vingativo', atencao: '⚠️ 3 verificações OBRIGATÓRIAS antes de tratar como animal vingativo:', passos: ['1️⃣ Holograma? "Você está sendo utilizado por alguém?" → Se SIM, é vingativo humano gerando a imagem → método de humano vingativo', '2️⃣ Espírito vivo do animal? "Você é um espírito vivo?" → Se SIM → método de espírito vivo', '3️⃣ Se nenhum dos dois → método de animal vingativo', 'REGRESSÃO (obrigatória) ⭐ — pode revelar BUNKON'], obs: 'Se for animal verdadeiro (essência animal), a alma se desintegra ao desencarnar — não fica vingativo. Se está vingativo, provavelmente é alma humana em corpo animal.', destino: 'Céu ☁️ ou destino conforme verificação', temBunkon: true },
+        { id: 5, num: '3', emoji: '🌟', cor: colors.bunkon, titulo: 'Bunkons', subtitulo: 'Pedaços de deuses encarnados', quem: 'Espíritos que na regressão revelam ter estado no MUNDO DIVINO antes de nascer (não mundo astral)', perguntaChave: 'Surge na regressão: "Antes do ventre, você estava no mundo astral?" → NÃO → estava no mundo divino', atencao: '⭐ É o método mais poderoso. Bunkons vingativos são comandantes de grupos.', passos: ['Chamar o Hontai desse bunkon', 'Fortalecer o Hontai (participando das classes Shinri)', 'Hontai recolhe o bunkon', 'Bunkon pede perdão por não ter cumprido a missão', 'Reparar dano', 'Receber NOVA MISSÃO de Deus', 'Subir para o MUNDO DIVINO 🌟'], destino: 'Mundo Divino 🌟', temBunkon: false },
+        { id: 6, num: '4', emoji: '👤', cor: '#9B7BB0', titulo: 'Espíritos Vivos (Obsessores Vivos)', subtitulo: 'Pessoas vivas que se soltaram', quem: 'Espíritos de pessoas ENCARNADAS (vivas no corpo) que se soltaram e estão perturbando', perguntaChave: '"Você é um espírito vivo? Tem corpo físico?" — Sim', passos: ['Investigar relação entre as 2 pessoas (atual e vidas passadas)', 'Pode envolver antigos donos do corpo (3 cenários: A é bunkon, B é bunkon, ou ambos)', 'REGRESSÃO (obrigatória) ⭐ — pode revelar BUNKON', 'Fortalecer a alma do espírito vivo', 'Chamar o Hontai dele (se for bunkon) + troca', 'Espírito vivo VOLTA PARA O CORPO FÍSICO 🔄'], destino: 'Volta ao corpo físico 🔄', obs: 'Não vai pro céu! Volta pra pessoa viva.', temBunkon: true },
+        { id: 7, num: '5', emoji: '👼', cor: '#E8B4D0', titulo: 'Bebês Abortados', subtitulo: 'Um por vez, sem mensagem', quem: 'Almas de bebês que sofreram aborto', perguntaChave: 'Pedido feito 1 bebê por vez (como o de pessoa falecida)', passos: ['Pergunta se está grudado na mãe', 'Pergunta onde está, o que aconteceu após o aborto', 'REGRESSÃO da alma ⭐ (obrigatória) — vida passada + descobre se é bunkon', 'Refazer vida passada + MCFRF', 'Reparar + Céu'], obs: 'Não precisa de mensagem. Feito apenas 1 vez. Sempre há motivo de vida passada que aparece na regressão.', destino: 'Céu ☁️ (ou Mundo Divino, se for bunkon)', temBunkon: true },
+        { id: 8, num: '6', emoji: '🧒', cor: '#F4A88C', titulo: 'Crianças que Não Conseguiram Crescer', subtitulo: 'Presas no "modo criança"', quem: 'Espírito de criança que morreu pequena na vida passada e ficou presa nesse modo, sem amadurecer', perguntaChave: '"Você é uma criança? Na vida passada, também morreu quando ainda era criança?" — Sim', passos: ['Oração: "Senhor Deus da Luz, faça com que esse espírito se lembre de sua vida passada"', 'Fazê-la crescer (virar adulto, conhecer mundo, perdoar, agradecer)', 'Bola de Luz com conhecimentos gerais do mundo onde a alma vive', 'REGRESSÃO (obrigatória) ⭐ — pode revelar BUNKON', 'Refazer vida + MCFRF + Reparar + Céu'], destino: 'Céu ☁️ (ou Mundo Divino, se for bunkon)', temBunkon: true },
+        { id: 9, num: '7', emoji: '🪄', cor: '#7DBCB5', titulo: 'Limpeza de Feitiços e Magia', subtitulo: 'Espíritos usados/escravizados', quem: 'Espíritos que foram enviados ou usados por alguém em magia', perguntaChave: '"Você está sendo usado? Alguém te enviou? Trabalha em troca de presentes?" — Sim', passos: ['Investigar quem enviou e o que prometeram em troca', 'Esclarecer que foram usados/escravizados', 'REGRESSÃO (obrigatória) ⭐ — pode revelar BUNKON', 'MCFRF + nova missão', 'Oração final: "Deus de Palha e todos os deuses da Shinri que já trabalharam para a magia, por favor, limpem essa magia e retirem todos os resquícios"'], destino: 'Céu ☁️ + Limpeza da magia', temBunkon: true },
+        { id: 10, num: '8', emoji: '🧚', cor: '#BBA0D4', titulo: 'Elementais', subtitulo: 'Seres da natureza', quem: 'Espíritos elementais dos 4 elementos da natureza', perguntaChave: '"Você é um elemental? Que tipo: terra, água, ar ou fogo?"', subtipos: ['🌍 Terra: gnomos e duendes (os mais frequentes — naturezas de crianças arteiras)', '💧 Água: ondinas e sereias', '🌬️ Ar: silfos, fadas, ninfas, Saci-Pererê', '🔥 Fogo: salamandras'], passos: ['Atrativo motivacional: "posso fortalecê-lo(a). Vai poder adquirir mais beleza e poderes. Quer experimentar?"', 'MCFRF adaptado à organização social deles', 'Reparar o que estavam fazendo', 'Voltam para o REINO DOS ELEMENTAIS 🌿'], obs: 'Nunca agem por maldade — são travessos. Gnomos/duendes escondem objetos (moedas, doces).', destino: 'Reino dos elementais 🌿', temBunkon: false },
+        { id: 11, num: '9', emoji: '⚡', cor: '#D4A574', titulo: 'Deuses (Imperfeitos / Invejosos / Vingativos)', subtitulo: 'Método mais elaborado', quem: 'Deuses imperfeitos, deuses-dragões, deuses invejosos do bunkon, deuses extraterrestres', perguntaChave: '"Você é um deus?" — Sim', passos: ['Método de fazer os deuses crescerem (versão completa)', 'Bola de Luz com Método de Fazer os Deuses Crescerem (80 cm)', 'Pergunta-se se é deus Akitsu ou Kunitsu (apenas informação interna, NÃO vai no relatório)', 'Receber nova missão', 'Subir para o MUNDO DIVINO 🌟'], destino: 'Mundo Divino 🌟', temBunkon: false },
+        { id: 12, num: '10', emoji: '🌱', cor: '#86B79E', titulo: 'Fortalecer Alma e Hontai / Trocar Hontai', subtitulo: 'Bloco do Primeiro Osatoshi', quem: 'A própria pessoa que recebe o Osatoshi (sua alma)', perguntaChave: 'Aparece no PRIMEIRO Osatoshi (e em harmonização e espírito vivo)', passos: ['🌟 A) Fortalecimento da alma da pessoa', '→ Regressão da alma (criança → bebê → ventre → antes)', '→ "Estava no mundo astral?" SIM = humana/bunkon c/ vida / NÃO = bunkon s/ vida passada', '→ Até 3 regressões se necessário', '⚡ B) Fortalecimento do Hontai (só se for bunkon)', '→ Hontai participa das classes Shinri', '→ Troca o bunkon', '→ Pergunta-se a MISSÃO (vai no relatório)', '🌍 C) Troca de Hontai (se for de outro planeta)', '→ Trocar por um Hontai do planeta Terra'], destino: 'Pessoa fica fortalecida 🌱', temBunkon: false },
+        { id: 13, num: '11', emoji: '👻', cor: '#A0B0C8', titulo: 'Salvar o(a) Antigo(a) Dono(a) do Corpo', subtitulo: 'Último passo do Primeiro Osatoshi', quem: 'Espírito que ocupava o corpo antes da alma atual', perguntaChave: 'Após fortalecer alma, Hontai e alma secundária', passos: ['Acolher: "Está sofrendo?" → oração de gratidão', 'Investigar: onde estava, que treinamento fazia', 'REGRESSÃO (obrigatória) ⭐ — pode revelar BUNKON', 'Refazer vida + MCFRF', 'Reparar + Céu'], obs: 'Importante na harmonização: se A e B são bunkons sem vida passada e têm conflitos, são os antigos donos dos corpos que estavam em desavença.', destino: 'Céu ☁️ (ou Mundo Divino, se for bunkon)', temBunkon: true },
+        { id: 14, num: '12', emoji: '👑', cor: '#C8A57D', titulo: 'Fazer os Deuses Crescerem (versão completa)', subtitulo: 'Método especial para deuses', quem: 'Versão completa do método dos deuses', perguntaChave: 'Aplicado dentro do Osatoshi de deuses (#11)', passos: ['Bola de Luz com o conteúdo completo do MCFRF', 'Praticar desde criança e ensinar para outros', 'Bola de Luz com conhecimentos do mundo onde a alma vive', 'Receber nova missão', 'Continuar participando das classes Shinri'], destino: 'Mundo Divino 🌟', temBunkon: false }
+      ];
+
+      const TiposPage = () => {
+        if (selectedType !== null) {
+          const tipo = tipos[selectedType];
+          return (
+            <div style={{ padding: '2rem 1.5rem', maxWidth: '900px', margin: '0 auto' }}>
+              <button onClick={() => setSelectedType(null)} style={{ background: 'transparent', border: 'none', color: colors.primary, display: 'flex', alignItems: 'center', gap: '0.3rem', cursor: 'pointer', marginBottom: '1rem', fontSize: '0.95rem' }}>
+                <ChevronLeft size={20} /> Voltar aos 12 tipos
+              </button>
+              <div style={{ background: `linear-gradient(135deg, ${tipo.cor}, ${colors.primary})`, padding: '1.5rem', borderRadius: '16px', color: 'white', marginBottom: '1.5rem', textAlign: 'center' }}>
+                <div style={{ fontSize: '0.85rem', opacity: 0.9, marginBottom: '0.3rem' }}>TIPO {tipo.num}</div>
+                <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>{tipo.emoji}</div>
+                <h1 style={{ fontSize: '1.4rem', marginBottom: '0.3rem' }}>{tipo.titulo}</h1>
+                <p style={{ fontSize: '0.9rem', opacity: 0.95 }}>{tipo.subtitulo}</p>
+              </div>
+              <div style={{ background: 'white', padding: '1.25rem', borderRadius: '12px', marginBottom: '1rem', border: `1px solid ${colors.light}` }}>
+                <div style={{ color: colors.primary, fontSize: '0.8rem', fontWeight: 'bold', marginBottom: '0.3rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Quem aparece</div>
+                <p style={{ color: colors.dark, lineHeight: '1.6', fontSize: '0.95rem' }}>{tipo.quem}</p>
+              </div>
+              <div style={{ background: colors.cream, padding: '1.25rem', borderRadius: '12px', marginBottom: '1rem', borderLeft: `4px solid ${colors.primary}` }}>
+                <div style={{ color: colors.primary, fontSize: '0.8rem', fontWeight: 'bold', marginBottom: '0.3rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>❓ Pergunta-chave</div>
+                <p style={{ color: colors.dark, lineHeight: '1.6', fontSize: '0.95rem', fontStyle: 'italic' }}>{tipo.perguntaChave}</p>
+              </div>
+              {tipo.atencao && (
+                <div style={{ background: '#FFF8E1', padding: '1.25rem', borderRadius: '12px', marginBottom: '1rem', borderLeft: `4px solid ${colors.accent}` }}>
+                  <div style={{ color: '#B8860B', fontSize: '0.8rem', fontWeight: 'bold', marginBottom: '0.3rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>⚠️ Atenção</div>
+                  <p style={{ color: colors.dark, lineHeight: '1.6', fontSize: '0.95rem' }}>{tipo.atencao}</p>
+                </div>
+              )}
+              <div style={{ background: 'white', padding: '1.25rem', borderRadius: '12px', marginBottom: '1rem', border: `1px solid ${colors.light}` }}>
+                <div style={{ color: colors.primary, fontSize: '0.8rem', fontWeight: 'bold', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>📋 Passo a passo</div>
+                {tipo.passos.map((passo, i) => (
+                  <div key={i} style={{ display: 'flex', gap: '0.75rem', marginBottom: i < tipo.passos.length - 1 ? '0.6rem' : 0, alignItems: 'flex-start' }}>
+                    <div style={{ background: tipo.cor, color: 'white', minWidth: '24px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 'bold', flexShrink: 0, marginTop: '2px' }}>{i + 1}</div>
+                    <p style={{ color: colors.dark, fontSize: '0.9rem', lineHeight: '1.5' }}>{passo}</p>
+                  </div>
+                ))}
+              </div>
+              {tipo.subtipos && (
+                <div style={{ background: colors.light, padding: '1.25rem', borderRadius: '12px', marginBottom: '1rem' }}>
+                  <div style={{ color: colors.primary, fontSize: '0.8rem', fontWeight: 'bold', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Subtipos</div>
+                  {tipo.subtipos.map((sub, i) => (<p key={i} style={{ color: colors.dark, fontSize: '0.9rem', marginBottom: '0.3rem', lineHeight: '1.5' }}>{sub}</p>))}
+                </div>
+              )}
+              {tipo.temBunkon && (
+                <div style={{ background: '#F0F4FA', padding: '1.25rem', borderRadius: '12px', marginBottom: '1rem', borderLeft: `4px solid ${colors.bunkon}` }}>
+                  <div style={{ color: colors.bunkon, fontSize: '0.8rem', fontWeight: 'bold', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>🌟 Se na regressão revelar ser BUNKON</div>
+                  <p style={{ color: colors.dark, fontSize: '0.85rem', marginBottom: '0.75rem', fontStyle: 'italic' }}>Se a regressão revelar que o espírito estava no Mundo Divino antes de nascer (não no Mundo Astral), seguir o método de bunkon:</p>
+                  {BLOCO_BUNKON_PASSOS.map((passo, i) => (
+                    <div key={i} style={{ display: 'flex', gap: '0.5rem', marginBottom: i < BLOCO_BUNKON_PASSOS.length - 1 ? '0.4rem' : 0, fontSize: '0.85rem' }}>
+                      <span style={{ color: colors.bunkon, fontWeight: 'bold' }}>•</span>
+                      <span style={{ color: colors.dark }}>{passo}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {tipo.obs && (
+                <div style={{ background: '#F5F1E8', padding: '1.25rem', borderRadius: '12px', marginBottom: '1rem', borderLeft: `4px solid ${colors.accent}` }}>
+                  <div style={{ color: colors.dark, fontSize: '0.8rem', fontWeight: 'bold', marginBottom: '0.3rem' }}>💡 Observação</div>
+                  <p style={{ color: colors.dark, lineHeight: '1.6', fontSize: '0.9rem' }}>{tipo.obs}</p>
+                </div>
+              )}
+              <div style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.dark})`, padding: '1.25rem', borderRadius: '12px', color: 'white', textAlign: 'center' }}>
+                <div style={{ fontSize: '0.8rem', opacity: 0.9, marginBottom: '0.3rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Destino final</div>
+                <p style={{ fontSize: '1.1rem', fontWeight: '500' }}>{tipo.destino}</p>
+              </div>
+            </div>
+          );
+        }
+        return (
+          <div style={{ padding: '2rem 1.5rem', maxWidth: '900px', margin: '0 auto' }}>
+            <h1 style={{ color: colors.dark, fontSize: '1.6rem', marginBottom: '0.5rem', textAlign: 'center' }}>📚 Os 12 Tipos de Osatoshi</h1>
+            <p style={{ color: colors.primary, textAlign: 'center', marginBottom: '1rem', fontSize: '0.9rem' }}>Toque em cada card para ver os detalhes</p>
+            <div style={{ background: '#F0F4FA', padding: '1rem 1.25rem', borderRadius: '12px', marginBottom: '1.5rem', borderLeft: `4px solid ${colors.bunkon}` }}>
+              <p style={{ color: colors.dark, fontSize: '0.85rem', lineHeight: '1.6' }}>
+                🌟 <strong>Regra fundamental:</strong> a regressão é OBRIGATÓRIA em todos os tipos. Em qualquer um, a alma pode revelar ter vindo do Mundo Divino (= bunkon) → muda o método.
+              </p>
+            </div>
+            <div style={{ display: 'grid', gap: '0.75rem' }}>
+              {tipos.map((tipo, i) => (
+                <div key={tipo.id} onClick={() => { setSelectedType(i); window.scrollTo(0, 0); }} style={{ background: 'white', borderRadius: '12px', padding: '1rem', display: 'flex', alignItems: 'center', gap: '1rem', cursor: 'pointer', border: `2px solid ${colors.light}`, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                  <div style={{ width: '50px', height: '50px', borderRadius: '12px', background: `linear-gradient(135deg, ${tipo.cor}, ${colors.primary})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', flexShrink: 0 }}>{tipo.emoji}</div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: '0.7rem', color: colors.primary, fontWeight: 'bold', marginBottom: '0.15rem' }}>#{tipo.num}</div>
+                    <div style={{ color: colors.dark, fontWeight: '600', fontSize: '0.95rem', lineHeight: '1.3' }}>{tipo.titulo}</div>
+                    <div style={{ color: colors.dark, fontSize: '0.8rem', opacity: 0.7, marginTop: '0.15rem' }}>{tipo.subtitulo}</div>
+                  </div>
+                  <ChevronRight size={20} color={colors.primary} />
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      };
+
+      // ============ OSATOSHIS ESPECÍFICOS ============
+      const especificos = [
+        { id: 1, num: '1', emoji: '🐾', cor: '#A8C887',
+          titulo: 'Animais (Estimação, Fortalecer Alma e Falecido)', subtitulo: 'Bloco unificado de Osatoshis para animais',
+          quem: 'Aplicado pra animais vivos (estimação) e animais falecidos. Como animais de estimação têm alma humana, podem aparecer qualquer tipo de espírito perturbador: humanos/animais vingativos, encostos, vingativos de donos, espíritos vivos, elementais, magias.',
+          perguntaChave: 'Há 3 variações deste Osatoshi conforme a situação do animal — todas com regressão obrigatória',
+          subtipos: [
+            '🐾 ANIMAL DE ESTIMAÇÃO (vivo): salvar espíritos que perturbam o animal',
+            '💪 FORTALECER ALMA DE ANIMAL: fortalecer a alma do animal vivo',
+            '🐶 ANIMAL FALECIDO: encaminhar pet falecido pro céu'
+          ],
+          passos: [
+            'Ler formulário + oração de início',
+            'Chamar 1º grupo, perguntar motivo e o que causavam',
+            'Salvar espíritos perturbadores, fazer reparar, enviar pro céu',
+            'REGRESSÃO ⭐ (obrigatória) — pode revelar alma humana em corpo animal OU bunkon',
+            'No 1º Osatoshi (animal vivo): fortalecer alma — regressão + vida passada + MCFRF',
+            'Perguntar se a alma quer voltar pro corpo. Se NÃO: pedir ao SDL pra trocar por alma de animal',
+            'Animal falecido: refazer vida passada + MCFRF + reparar + Céu'
+          ],
+          obs: 'Quase 100% dos animais de estimação tinham alma humana na vida anterior. A alma de animal verdadeira se desintegra ao desencarnar. Não escrever no relatório que a alma foi trocada — relatar apenas que foi fortalecida.',
+          destino: 'Espíritos: Céu ☁️ / Alma: volta ao corpo (ou trocada/encaminhada conforme caso)', temBunkon: true },
+        { id: 2, num: '2', emoji: '🏠', cor: '#7DBCB5',
+          titulo: 'Lugar e Cercanias', subtitulo: 'Residência, escola, hospital',
+          quem: 'Indígenas, escravos, antigos moradores, colonizadores, animais domésticos/selvagens mortos no local, espíritos da rua, extraterrestres, espíritos vivos apegados ao local, espíritos guardiões, magias, portais',
+          perguntaChave: 'Procurar no Google Maps o endereço — ver se tem hospital, cemitério, montanha, rio perto pra ter ideia dos tipos de espíritos',
+          passos: ['Ler formulário + localizar endereço no Google Maps', 'Oração de início específica', 'Chamar 1º grupo, perguntar motivo, o que causavam', 'Salvar, fazer reparar, enviar pro céu', 'Repetir até não aparecer mais ninguém', 'Receber manto de Luz de proteção do SDL e colocar sobre o local'],
+          obs: 'Lembrar de fechar portais de inferno ou outras dimensões, se houver. Limpeza de magias e energias impregnadas.',
+          destino: 'Espíritos: Céu ☁️ / Local: manto de proteção 🛡️', temBunkon: true },
+        { id: 3, num: '3', emoji: '🏢', cor: '#9B7BB0',
+          titulo: 'Empresa, Empreendimento ou Negócio', subtitulo: 'Pra negócios',
+          quem: 'Espíritos de lugar + espíritos vingativos do dono + espíritos vivos de concorrentes/invejosos + vingativos de ancestrais do dono + magias',
+          perguntaChave: 'Quando o negócio está com dificuldades de prosperar, perde clientes, sofre concorrência desleal',
+          passos: ['Ler formulário + localizar endereço no Google Maps', 'Oração de início específica', 'Chamar grupos, salvar e enviar', 'Após finalizar: manto de Luz sobre o local'],
+          destino: 'Espíritos: Céu ☁️ / Local: manto de proteção 🛡️', temBunkon: true },
+        { id: 4, num: '4', emoji: '🔑', cor: '#D4A574',
+          titulo: 'Venda ou Aluguel de Imóvel', subtitulo: 'Liberar imóvel pra venda/locação',
+          quem: 'Espíritos de lugar + vingativos do dono + espíritos vivos invejosos + vingativos de ancestrais + magias',
+          perguntaChave: 'Imóvel não vende, não aluga, gera tristeza/cansaço/falta de ar nos visitantes',
+          passos: ['Ler formulário + localizar endereço no Google Maps', 'Oração de início específica', 'Chamar grupos, perguntar quantos são, motivo, o que causavam', 'Salvar e enviar pro céu', 'Receber manto de Luz de proteção e colocar sobre o local'],
+          obs: 'Em imóveis em inventário: mencionar no relatório (ex: "imóvel que está em inventário devido ao falecimento do pai do Fulano").',
+          destino: 'Espíritos: Céu ☁️ / Imóvel: manto de proteção 🛡️', temBunkon: true },
+        { id: 5, num: '5', emoji: '⚰️', cor: '#A0B0C8',
+          titulo: 'Pessoa Falecida', subtitulo: 'Encaminhar falecido pro céu',
+          quem: 'A própria pessoa falecida — membro da família, parente, amigo',
+          perguntaChave: 'Quando há um falecido para encaminhar pro céu',
+          passos: ['Ler formulário + oração de início específica', 'Chamar o falecido pelo nome', 'Acolher: "Está sofrendo?" → oração de gratidão', 'Investigar onde estava após a morte', 'REGRESSÃO ⭐ (obrigatória)', 'Refazer vida passada + MCFRF', 'Reparar danos que causou em vida → Céu'],
+          obs: 'Informações necessárias: nome completo, datas de nascimento/falecimento, motivo do falecimento, como viveu. Geralmente basta 1 Osatoshi. Vítimas de tragédias em massa: pode-se pedir Osatoshi coletivo.',
+          destino: 'Céu ☁️ (ou Mundo Divino, se for bunkon)', temBunkon: true },
+        { id: 6, num: '6', emoji: '👼', cor: '#E8B4D0',
+          titulo: 'Bebê Abortado (Específico)', subtitulo: 'Salvar a alma do bebê',
+          quem: 'Almas de bebês abortados — feito 1 por vez',
+          perguntaChave: '"Você é um espírito de bebê abortado?" — Sim. "Você é bebê de [nome]? De ancestral? Da rua?"',
+          passos: ['Acolher: "Você queria ter nascido, crescido, vivido... eu sinto muito"', 'Lembrar que já nasceu e morreu várias vezes antes', 'REGRESSÃO ⭐: "Lembre-se do ventre da mãe... antes disso, estava no mundo astral?"', 'Se NÃO → método de bunkon', 'Se SIM → "antes disso tinha corpo físico, era adulto, homem/mulher"', 'Refazer vida passada (o que fez quando engravidou/parceira engravidou) + MCFRF', 'Reparar e Céu'],
+          obs: 'Feito apenas 1 vez. Não precisa de mensagem. Sempre há motivo de vida passada que aparece na regressão.',
+          destino: 'Céu ☁️ (ou Mundo Divino, se for bunkon)', temBunkon: true },
+        { id: 7, num: '7', emoji: '👴', cor: '#B89A6D',
+          titulo: 'Ancestrais da Família (Paterna e Materna)', subtitulo: 'Salvar cada sobrenome — série de 3 Osatoshis',
+          quem: 'Ancestrais de cada sobrenome da pessoa — paternos e maternos',
+          perguntaChave: 'Pra cada sobrenome que a pessoa tem, faz-se Osatoshi separado',
+          passos: ['Oração específica pelos ancestrais da família [sobrenome]', 'Chamar 1º grupo de ancestrais', 'Investigar onde estavam (camadas inferiores do mundo astral), o que causaram', 'Salvar, refazer vidas passadas + prática de gratidão', 'Reparar danos aos descendentes', 'Encaminhar pro céu — ficam fortalecidos para proteger os descendentes', 'Repetir até não aparecer mais ninguém'],
+          obs: 'Indica-se SÉRIE DE 3 Osatoshis pra cada família (intervalo mínimo de 1 semana). Pode-se também salvar ancestrais de OUTRAS pessoas para expressar gratidão — eles ficarão eternamente agradecidos e influenciarão os descendentes em seu favor.',
+          destino: 'Céu ☁️ — passam a proteger os descendentes', temBunkon: false },
+        { id: 8, num: '8', emoji: '😡', cor: '#D67373',
+          titulo: 'Vingativos de Ancestrais', subtitulo: 'Espíritos que os ancestrais fizeram sofrer',
+          quem: 'Espíritos de pessoas que os ancestrais ou membros da família fizeram sofrer no passado, e estão vingativos perturbando os descendentes',
+          perguntaChave: 'Pra resolver perturbações causadas pela vingança contra os ancestrais',
+          passos: ['Oração específica pelos vingativos da família [sobrenome]', 'Chamar grupos de vingativos', 'Investigar o que sofreram (cobaias em experimentos, abortos forçados, queimadas na fogueira, escravidão)', 'Mostrar como sofreram → REGRESSÃO ⭐ até início da trajetória', 'Refazer vidas passadas + prática de gratidão', 'Reparar tudo o que estavam causando aos descendentes', 'Céu ☁️'],
+          obs: 'Os relatos costumam ser fortes (escravos, mulheres queimadas, bebês abortados, vítimas de bruxaria) — muitos vingativos perturbam saúde, dinheiro, vitalidade dos descendentes.',
+          destino: 'Céu ☁️ (ou Mundo Divino, se for bunkon)', temBunkon: true },
+        { id: 9, num: '9', emoji: '🛡️', cor: '#7B96D4',
+          titulo: 'Ancestrais Responsáveis (~100)', subtitulo: 'Os 100 ancestrais que protegem cada indivíduo',
+          quem: 'Os cerca de 100 ancestrais que protegem cada indivíduo — muitos estão no inferno e não têm forças pra proteger',
+          perguntaChave: 'Pra fortalecer a proteção espiritual da pessoa',
+          passos: ['Oração específica pelos ancestrais responsáveis pelo(a) [nome]', 'Chamar grupos', 'Salvar os que estão no inferno', 'Refazer vidas passadas + prática de gratidão', 'Encaminhar pro céu — ficam fortalecidos pra proteger', 'Eles agradecem ao solicitante por terem sido salvos'],
+          obs: 'Homens: 80% paternos + 20% maternos. Mulheres: 80% maternos + 20% paternos. Com a ascensão da Terra, novas vagas se abrem constantemente → fazer Osatoshis SEMANAIS ou DIÁRIOS (pelo Osatoshi de Garrafa).',
+          destino: 'Céu ☁️ — passam a proteger melhor', temBunkon: false },
+        { id: 10, num: '10', emoji: '💞', cor: '#C8A57D',
+          titulo: 'Harmonização entre Duas Pessoas', subtitulo: 'Casal, mãe/filho, sócios',
+          quem: 'Duas pessoas em desarmonia — regressão das almas das duas',
+          perguntaChave: 'Conflitos persistentes entre 2 pessoas (relacionamento, família, trabalho)',
+          passos: ['Oração específica de harmonização', 'Regressão das almas das DUAS pessoas até a vida em que estavam juntas', 'Identificar conflito de vida passada', 'Reparação e reconciliação entre as almas', 'Praticar MCFRF juntos', 'Voltam pros seus corpos harmonizadas'],
+          obs: '⚠️ 3 CENÁRIOS no procedimento: (Caso 1) Os dois não são bunkons. (Caso 2) Apenas um é bunkon. (Caso 3) Os dois são bunkons — nesse caso, são os ANTIGOS DONOS DOS CORPOS que estavam em desavença.',
+          destino: 'Almas voltam aos corpos harmonizadas 🔄', temBunkon: true },
+        { id: 11, num: '11', emoji: '🌐', cor: '#BBA0D4',
+          titulo: 'Harmonização de Egrégoras', subtitulo: 'Religiosas, filosóficas, terapêuticas',
+          quem: 'Egrégoras de religiões, seitas, ordens, linhas terapêuticas, políticas, acadêmicas que a pessoa frequentou e podem estar em ciúmes/desarmonia com a Shinri',
+          perguntaChave: 'Pra quem entrou na Shinri vindo de outras religiões/filosofias/terapias',
+          passos: ['Oração específica de harmonização de egrégoras', 'Chamar as egrégoras a que a pessoa pertenceu', 'Apresentar a egrégora da Shinri', 'Harmonizar entre si e com a Shinri', 'Egrégoras se comprometem a ensinar conhecimentos e trabalhar juntas pela Harmonia Universal', 'Espíritos felizes vão pro mundo divino de cada egrégora'],
+          obs: 'Egrégoras maus (reptilianos etc.) são levados pra FOGUEIRA. Os deuses são almejados pelos bunkons — por isso quem é bunkon e veio de outra religião sofre ataques desses deuses. Egrégoras familiares se harmonizam pelo Osatoshi de ancestrais e Pessoal Individual.',
+          destino: 'Mundo divino de cada egrégora 🌟', temBunkon: false }
+      ];
+
+      // ============ ESPECÍFICOS: INTRO ============
+      const EspecificosIntroPage = () => (
+        <div style={{ padding: '2rem 1.5rem', maxWidth: '900px', margin: '0 auto' }}>
+          <h1 style={{ color: colors.dark, fontSize: '1.6rem', marginBottom: '1rem', textAlign: 'center' }}>📋 Osatoshis Específicos</h1>
+          <p style={{ color: colors.primary, textAlign: 'center', marginBottom: '2rem', fontSize: '0.95rem', fontStyle: 'italic' }}>Introdução</p>
+
+          <div style={{ background: 'white', borderLeft: `4px solid ${colors.primary}`, padding: '1.25rem', borderRadius: '8px', marginBottom: '1.5rem', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+            <p style={{ color: colors.dark, lineHeight: '1.7', fontSize: '0.95rem' }}>
+              Os <strong>Osatoshis Específicos</strong> são variações do método base do Osatoshi voltadas para situações ou alvos particulares. Diferentemente do Osatoshi Pessoal Individual (que é amplo e trabalha vários tipos de espíritos numa só sessão), cada Específico tem um <strong>foco direcionado</strong>.
+            </p>
+          </div>
+
+          <h2 style={{ color: colors.primary, fontSize: '1.15rem', marginBottom: '1rem', marginTop: '2rem' }}>🔍 Individual vs. Específicos</h2>
+
+          <div style={{ display: 'grid', gap: '1rem', marginBottom: '2rem' }}>
+            <div style={{ background: 'white', padding: '1.25rem', borderRadius: '12px', border: `2px solid ${colors.secondary}`, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.5rem' }}>
+                <div style={{ background: colors.secondary, color: 'white', padding: '0.3rem 0.7rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 'bold' }}>INDIVIDUAL</div>
+                <strong style={{ color: colors.dark, fontSize: '0.95rem' }}>Osatoshi Pessoal Individual</strong>
+              </div>
+              <p style={{ color: colors.dark, fontSize: '0.9rem', lineHeight: '1.6' }}>
+                Salva os espíritos que perturbam <strong>uma pessoa</strong>, por razões de vidas passadas e vida atual. Trabalha vários tipos (vingativos, vivos, bebês, deuses, etc.) numa só sessão.
+              </p>
+            </div>
+            <div style={{ background: 'white', padding: '1.25rem', borderRadius: '12px', border: `2px solid ${colors.accent}`, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.5rem' }}>
+                <div style={{ background: colors.accent, color: colors.dark, padding: '0.3rem 0.7rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 'bold' }}>ESPECÍFICOS</div>
+                <strong style={{ color: colors.dark, fontSize: '0.95rem' }}>Osatoshis Específicos</strong>
+              </div>
+              <p style={{ color: colors.dark, fontSize: '0.9rem', lineHeight: '1.6' }}>
+                Têm <strong>foco direcionado</strong>: um local, um animal, um falecido, ancestrais, harmonização entre pessoas. Cada um tem seu próprio método.
+              </p>
+            </div>
+          </div>
+
+          <h2 style={{ color: colors.primary, fontSize: '1.15rem', marginBottom: '1rem' }}>📚 Os 11 Tipos de Específicos</h2>
+          <div style={{ background: colors.cream, padding: '1.25rem', borderRadius: '12px', marginBottom: '1.5rem' }}>
+            <p style={{ color: colors.dark, fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '0.75rem' }}>
+              🐾 <strong>Animais (1 bloco)</strong> — Estimação, Fortalecer Alma e Falecido
+            </p>
+            <p style={{ color: colors.dark, fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '0.75rem' }}>
+              🏠 <strong>Lugares (3)</strong> — Lugar e cercanias · Empresa · Venda/aluguel de imóvel
+            </p>
+            <p style={{ color: colors.dark, fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '0.75rem' }}>
+              ⚰️ <strong>Falecidos (2)</strong> — Pessoa falecida · Bebê abortado
+            </p>
+            <p style={{ color: colors.dark, fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '0.75rem' }}>
+              👴 <strong>Ancestrais (3)</strong> — Família paterna e materna · Vingativos de ancestrais · Ancestrais responsáveis
+            </p>
+            <p style={{ color: colors.dark, fontSize: '0.9rem', lineHeight: '1.6' }}>
+              💞 <strong>Harmonização (2)</strong> — Entre duas pessoas · Egrégoras
+            </p>
+          </div>
+
+          <div style={{ background: '#FFF8E1', padding: '1.25rem', borderRadius: '12px', borderLeft: `4px solid ${colors.accent}`, marginBottom: '1rem' }}>
+            <p style={{ color: colors.dark, fontSize: '0.9rem', lineHeight: '1.6' }}>
+              💡 <strong>Importante:</strong> a regressão também é obrigatória nos Específicos! Em qualquer tipo, a alma pode revelar ter vindo do Mundo Divino (= bunkon) → muda pra método de bunkon.
+            </p>
+          </div>
+
+          <div onClick={() => navigateTo('especificos-tipos')} style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.dark})`, color: 'white', padding: '1.25rem', borderRadius: '12px', textAlign: 'center', cursor: 'pointer', marginTop: '1rem' }}>
+            <p style={{ fontSize: '0.95rem', fontWeight: '500' }}>Ver os 11 Tipos →</p>
+          </div>
+        </div>
+      );
+
+      // ============ ESPECÍFICOS: TIPOS ============
+      const EspecificosTiposPage = () => {
+        if (selectedEspecifico !== null) {
+          const tipo = especificos[selectedEspecifico];
+          return (
+            <div style={{ padding: '2rem 1.5rem', maxWidth: '900px', margin: '0 auto' }}>
+              <button onClick={() => setSelectedEspecifico(null)} style={{ background: 'transparent', border: 'none', color: colors.primary, display: 'flex', alignItems: 'center', gap: '0.3rem', cursor: 'pointer', marginBottom: '1rem', fontSize: '0.95rem' }}>
+                <ChevronLeft size={20} /> Voltar aos 11 tipos
+              </button>
+              <div style={{ background: `linear-gradient(135deg, ${tipo.cor}, ${colors.primary})`, padding: '1.5rem', borderRadius: '16px', color: 'white', marginBottom: '1.5rem', textAlign: 'center' }}>
+                <div style={{ fontSize: '0.85rem', opacity: 0.9, marginBottom: '0.3rem' }}>ESPECÍFICO #{tipo.num}</div>
+                <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>{tipo.emoji}</div>
+                <h1 style={{ fontSize: '1.4rem', marginBottom: '0.3rem' }}>{tipo.titulo}</h1>
+                <p style={{ fontSize: '0.9rem', opacity: 0.95 }}>{tipo.subtitulo}</p>
+              </div>
+              <div style={{ background: 'white', padding: '1.25rem', borderRadius: '12px', marginBottom: '1rem', border: `1px solid ${colors.light}` }}>
+                <div style={{ color: colors.primary, fontSize: '0.8rem', fontWeight: 'bold', marginBottom: '0.3rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Quem aparece / Pra quem é</div>
+                <p style={{ color: colors.dark, lineHeight: '1.6', fontSize: '0.95rem' }}>{tipo.quem}</p>
+              </div>
+              <div style={{ background: colors.cream, padding: '1.25rem', borderRadius: '12px', marginBottom: '1rem', borderLeft: `4px solid ${colors.primary}` }}>
+                <div style={{ color: colors.primary, fontSize: '0.8rem', fontWeight: 'bold', marginBottom: '0.3rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>❓ Pergunta-chave / Quando usar</div>
+                <p style={{ color: colors.dark, lineHeight: '1.6', fontSize: '0.95rem', fontStyle: 'italic' }}>{tipo.perguntaChave}</p>
+              </div>
+              <div style={{ background: 'white', padding: '1.25rem', borderRadius: '12px', marginBottom: '1rem', border: `1px solid ${colors.light}` }}>
+                <div style={{ color: colors.primary, fontSize: '0.8rem', fontWeight: 'bold', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>📋 Passo a passo</div>
+                {tipo.passos.map((passo, i) => (
+                  <div key={i} style={{ display: 'flex', gap: '0.75rem', marginBottom: i < tipo.passos.length - 1 ? '0.6rem' : 0, alignItems: 'flex-start' }}>
+                    <div style={{ background: tipo.cor, color: 'white', minWidth: '24px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 'bold', flexShrink: 0, marginTop: '2px' }}>{i + 1}</div>
+                    <p style={{ color: colors.dark, fontSize: '0.9rem', lineHeight: '1.5' }}>{passo}</p>
+                  </div>
+                ))}
+              </div>
+              {tipo.temBunkon && (
+                <div style={{ background: '#F0F4FA', padding: '1.25rem', borderRadius: '12px', marginBottom: '1rem', borderLeft: `4px solid ${colors.bunkon}` }}>
+                  <div style={{ color: colors.bunkon, fontSize: '0.8rem', fontWeight: 'bold', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>🌟 Se na regressão revelar ser BUNKON</div>
+                  <p style={{ color: colors.dark, fontSize: '0.85rem', marginBottom: '0.75rem', fontStyle: 'italic' }}>Se a regressão revelar que o espírito estava no Mundo Divino antes de nascer (não no Mundo Astral), seguir o método de bunkon:</p>
+                  {BLOCO_BUNKON_PASSOS.map((passo, i) => (
+                    <div key={i} style={{ display: 'flex', gap: '0.5rem', marginBottom: i < BLOCO_BUNKON_PASSOS.length - 1 ? '0.4rem' : 0, fontSize: '0.85rem' }}>
+                      <span style={{ color: colors.bunkon, fontWeight: 'bold' }}>•</span>
+                      <span style={{ color: colors.dark }}>{passo}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {tipo.obs && (
+                <div style={{ background: '#F5F1E8', padding: '1.25rem', borderRadius: '12px', marginBottom: '1rem', borderLeft: `4px solid ${colors.accent}` }}>
+                  <div style={{ color: colors.dark, fontSize: '0.8rem', fontWeight: 'bold', marginBottom: '0.3rem' }}>💡 Observação</div>
+                  <p style={{ color: colors.dark, lineHeight: '1.6', fontSize: '0.9rem' }}>{tipo.obs}</p>
+                </div>
+              )}
+              <div style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.dark})`, padding: '1.25rem', borderRadius: '12px', color: 'white', textAlign: 'center' }}>
+                <div style={{ fontSize: '0.8rem', opacity: 0.9, marginBottom: '0.3rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Destino final</div>
+                <p style={{ fontSize: '1.1rem', fontWeight: '500' }}>{tipo.destino}</p>
+              </div>
+            </div>
+          );
+        }
+        return (
+          <div style={{ padding: '2rem 1.5rem', maxWidth: '900px', margin: '0 auto' }}>
+            <h1 style={{ color: colors.dark, fontSize: '1.6rem', marginBottom: '0.5rem', textAlign: 'center' }}>📋 Os 11 Tipos de Específicos</h1>
+            <p style={{ color: colors.primary, textAlign: 'center', marginBottom: '1rem', fontSize: '0.9rem' }}>Toque em cada card para ver os detalhes</p>
+            <div style={{ background: '#FFF8E1', padding: '1rem 1.25rem', borderRadius: '12px', marginBottom: '1.5rem', borderLeft: `4px solid ${colors.accent}` }}>
+              <p style={{ color: colors.dark, fontSize: '0.85rem', lineHeight: '1.6' }}>
+                💡 <strong>Lembre-se:</strong> a regressão é obrigatória em TODOS os tipos — qualquer alma pode revelar ser bunkon.
+              </p>
+            </div>
+            <div style={{ display: 'grid', gap: '0.75rem' }}>
+              {especificos.map((tipo, i) => (
+                <div key={tipo.id} onClick={() => { setSelectedEspecifico(i); window.scrollTo(0, 0); }} style={{ background: 'white', borderRadius: '12px', padding: '1rem', display: 'flex', alignItems: 'center', gap: '1rem', cursor: 'pointer', border: `2px solid ${colors.light}`, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                  <div style={{ width: '50px', height: '50px', borderRadius: '12px', background: `linear-gradient(135deg, ${tipo.cor}, ${colors.primary})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', flexShrink: 0 }}>{tipo.emoji}</div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: '0.7rem', color: colors.primary, fontWeight: 'bold', marginBottom: '0.15rem' }}>#{tipo.num}</div>
+                    <div style={{ color: colors.dark, fontWeight: '600', fontSize: '0.95rem', lineHeight: '1.3' }}>{tipo.titulo}</div>
+                    <div style={{ color: colors.dark, fontSize: '0.8rem', opacity: 0.7, marginTop: '0.15rem' }}>{tipo.subtitulo}</div>
+                  </div>
+                  <ChevronRight size={20} color={colors.primary} />
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      };
+
+      const QuizPage = () => {
+        const [currentQ, setCurrentQ] = useState(0);
+        const [selectedAnswer, setSelectedAnswer] = useState(null);
+        const [showResult, setShowResult] = useState(false);
+        const [score, setScore] = useState(0);
+
+        const questions = [
+          { q: 'Qual a primeira pergunta-chave feita ao espírito que aparece no Osatoshi?', opts: ['Você está vingativo?', 'Você é um espírito humano?', 'Em que época você viveu?', 'Você quer ser salvo?'], correct: 1, exp: 'A primeira pergunta é sempre "Você é um espírito humano?" — a partir daí o método se divide.' },
+          { q: 'Em quais tipos de Osatoshi a regressão é obrigatória?', opts: ['Apenas em humanos vingativos', 'Apenas em humanos (vingativos e não-vingativos)', 'Em TODOS os tipos, para descobrir se a alma é humana ou bunkon', 'Apenas no primeiro Osatoshi'], correct: 2, exp: 'A regressão é OBRIGATÓRIA em todos os tipos! Em qualquer um deles a alma pode revelar ter vindo do Mundo Divino (= bunkon), o que muda completamente o método.' },
+          { q: 'Quantas vezes a Oração do Solicitante (Sr. Deus da Luz, deus Su) deve ser repetida?', opts: ['1 vez', '3 vezes', '5 vezes', '7 vezes'], correct: 1, exp: 'A oração é repetida 3 vezes, conforme orientação na imagem da oração.' },
+          { q: 'Qual a descoberta-chave do princípio do vingativo?', opts: ['O espírito perdoa sem entender', 'Quem está vingativo hoje foi quem iniciou a briga no começo da trajetória', 'A pessoa que recebe o Osatoshi é sempre culpada', 'A regressão basta para salvar'], correct: 1, exp: 'Ao regredir até o início da trajetória, o vingativo descobre que foi ELE quem iniciou tudo — por isso esta era é chamada de "era do acerto de contas dos carmas".' },
+          { q: 'O que acontece se na regressão o espírito disser que estava no MUNDO DIVINO (não astral) antes de nascer?', opts: ['Ele é um anjo', 'Ele é um bunkon — muda para o método de bunkon', 'Ele é um ancestral', 'Continua o método normal'], correct: 1, exp: 'Mundo divino = bunkon. O método muda: chama-se o Hontai, fortalece, recolhe o bunkon, recebe nova missão, sobe pro mundo divino.' },
+          { q: 'Um BEBÊ ABORTADO pode revelar na regressão ser bunkon?', opts: ['Não, bebês nunca são bunkons', 'Sim, em qualquer tipo a alma pode revelar ser bunkon', 'Só se a mãe for bunkon', 'Apenas se for o primeiro filho'], correct: 1, exp: 'Sim! Em bebês abortados, animais, crianças que não cresceram, espíritos vivos — em qualquer tipo a regressão pode revelar ser bunkon. Por isso é regra.' },
+          { q: 'No Osatoshi de Animais VINGATIVOS, quais as 3 verificações antes de tratar como animal?', opts: ['Cor, raça, idade', 'Holograma de vingativo humano? Espírito vivo do animal? Senão, animal vingativo', 'Doméstico? Selvagem? Misto?', 'Dia, mês, ano de morte'], correct: 1, exp: 'Animais não nutrem ódio (a alma se desintegra). Se está vingativo, ou é holograma de humano, ou é espírito vivo do animal, ou alma humana em corpo animal.' },
+          { q: 'Para onde vai o Espírito Vivo após o Osatoshi?', opts: ['Céu', 'Mundo divino', 'Volta para o corpo físico dele(a)', 'Inferno'], correct: 2, exp: 'Espírito vivo é de pessoa ENCARNADA — volta para o próprio corpo físico, fortalecido.' },
+          { q: 'Quais procedimentos extras acontecem APENAS no Primeiro Osatoshi?', opts: ['Apenas a oração', 'Fortalecer alma + Hontai + alma secundária + salvar antigo dono do corpo', 'Apenas o MCFRF', 'Cobrar mais caro'], correct: 1, exp: 'No primeiro Osatoshi: (A) fortalecer alma principal, (B) Hontai (se for bunkon), (C) alma secundária, (D) salvar antigo dono do corpo.' },
+          { q: 'O que é o MCFRF e quando é usado?', opts: ['Método de Cuidar de Famílias Rurais', 'Método de Construir uma Família Repleta de Felicidade — usado como bola de Luz dentro de todos os Osatoshis', 'Método de Curar Feitiços', 'Não é usado mais'], correct: 1, exp: 'MCFRF = Método de Construir uma Família Repleta de Felicidade. É praticado dentro de TODOS os Osatoshis como bola de Luz, para fortalecer o espírito.' },
+          { q: 'Para onde vai um Bunkon após salvação? E um Elemental?', opts: ['Ambos pro céu', 'Bunkon = mundo divino / Elemental = volta pro reino dos elementais', 'Bunkon = inferno / Elemental = céu', 'Ambos pro mundo divino'], correct: 1, exp: 'Bunkon volta ao mundo divino com nova missão. Elemental volta pro reino dos elementais — não vai pro céu.' },
+          { q: 'No Osatoshi de Lugar e Cercanias, qual o primeiro passo antes da oração de início?', opts: ['Acender uma vela', 'Localizar o endereço no Google Maps e verificar o que tem perto', 'Decorar o método', 'Pedir autorização do dono'], correct: 1, exp: 'É essencial localizar o endereço no Google Maps e verificar se tem hospital, cemitério, montanha, rio etc. — isso dá ideia dos tipos de espíritos que podem estar no local.' },
+          { q: 'Quantos ancestrais responsáveis cada indivíduo tem aproximadamente?', opts: ['10', '50', '100', '500'], correct: 2, exp: 'Cada indivíduo tem cerca de 100 ancestrais responsáveis. Nos homens: 80% paternos + 20% maternos. Nas mulheres: 80% maternos + 20% paternos.' },
+          { q: 'No Osatoshi de Animal de Estimação, se a alma humana NÃO quer voltar pro corpo do animal, o que fazer?', opts: ['Forçar a voltar', 'Pedir ao SDL para trocar por uma alma de animal — sem mencionar a troca no relatório', 'Sacrificar o animal', 'Esperar morrer'], correct: 1, exp: 'Pede-se ao Senhor Deus da Luz para colocar uma alma de animal no lugar. No relatório, escrever apenas que a alma foi fortalecida — sem mencionar a troca.' },
+          { q: 'Por que se deve fazer SÉRIE DE 3 Osatoshis para os Ancestrais da Família?', opts: ['Tradição', 'São muitos ancestrais e um único Osatoshi não salva todos', 'Pra cobrar mais', 'Pra ter mais kisha'], correct: 1, exp: 'São indicados 3 Osatoshis pra cada família (com intervalo mínimo de 1 semana) porque são muitos ancestrais e em um só não conseguem ser todos salvos.' },
+          { q: 'Quando alguém vem de outra religião/filosofia para a Shinri, qual Osatoshi Específico é indicado?', opts: ['Pessoal Individual', 'Harmonização de Egrégoras', 'Lugar e cercanias', 'Não precisa nenhum'], correct: 1, exp: 'A Harmonização de Egrégoras é feita pra todos que entram na Associação Shinri — pra harmonizar as egrégoras religiosas, filosóficas ou terapêuticas anteriores com a Shinri.' },
+          { q: 'O que torna o PRIMEIRO Osatoshi diferente dos demais?', opts: ['É mais barato', 'Tem 3 procedimentos extras: fortalecer alma, Hontai e salvar antigo dono do corpo', 'Demora menos', 'Não usa orações'], correct: 1, exp: 'No primeiro Osatoshi de uma pessoa, fazem-se 3 procedimentos extras: (A) fortalecer alma, (B) Hontai (se for bunkon), (C) alma secundária, (D) salvar antigo dono do corpo.' },
+          { q: 'Quem são os ELEMENTAIS e pra onde vão após o Osatoshi?', opts: ['Demônios → inferno', 'Seres da natureza (gnomos, fadas, sereias, salamandras) → reino dos elementais', 'Anjos → céu', 'Bunkons → mundo divino'], correct: 1, exp: 'Elementais são os 4 tipos: terra (gnomos/duendes), água (ondinas/sereias), ar (fadas/silfos/Saci), fogo (salamandras). Após o Osatoshi, voltam ao reino dos elementais.' },
+          { q: 'No Osatoshi de Humanos VINGATIVOS, se o espírito NÃO QUER NOS OUVIR, o que fazer?', opts: ['Desistir do Osatoshi', 'Ir para a seção 1.3 (parte introdutória) para suavizar antes', 'Forçar a regressão', 'Esperar até o próximo dia'], correct: 1, exp: 'Quando o vingativo não quer nos ouvir, vai-se para a seção 1.3 (parte introdutória) que tem frases especiais pra suavizar e abrir o diálogo.' },
+          { q: 'O que é o Hontai?', opts: ['Um tipo de oração', 'O Deus-guia / deus que origina o bunkon — só existe para quem é bunkon', 'Um tipo de bola de Luz', 'O nome do espírito vingativo'], correct: 1, exp: 'O Hontai é o Deus-guia ou Deus de origem do bunkon. Quando a pessoa é bunkon, o Hontai é chamado pra fortalecer, recolher o bunkon e revelar a missão da pessoa.' },
+          { q: 'Pra onde vai um BEBÊ ABORTADO após o Osatoshi?', opts: ['Não é salvo', 'Céu ☁️ (ou Mundo Divino, se for bunkon)', 'Volta ao corpo da mãe', 'Inferno'], correct: 1, exp: 'O bebê abortado é encaminhado ao céu após refazer a vida passada e MCFRF. Se na regressão revelar ser bunkon, vai pro Mundo Divino.' },
+          { q: 'No Osatoshi de Lugar/Empresa/Imóvel, o que se faz NO FINAL após salvar todos os espíritos?', opts: ['Não se faz nada', 'Recebe-se um manto de Luz de proteção do SDL e coloca-se sobre o local', 'Pinta-se a casa', 'Acende-se uma vela'], correct: 1, exp: 'Ao final desses Osatoshis específicos de locais, recebe-se do Senhor Deus da Luz um manto de Luz de proteção para colocar sobre o local — protegendo de novas intrusões.' },
+          { q: 'Quando se faz o Osatoshi de HARMONIZAÇÃO entre Duas Pessoas e os DOIS são bunkons, quem realmente está em desavença?', opts: ['As pessoas atuais', 'Os antigos donos dos corpos delas', 'Os Hontais', 'Ninguém'], correct: 1, exp: 'Quando os 2 são bunkons sem vida passada, são os ANTIGOS DONOS DOS CORPOS de A e B que estavam em desavença — é com eles que se faz a harmonização.' },
+          { q: 'Espíritos de ANCESTRAIS que aparecem no Osatoshi geralmente estão onde?', opts: ['No céu', 'Em camadas inferiores do mundo astral ou no inferno', 'No Mundo Divino', 'No reino dos elementais'], correct: 1, exp: 'Muitos ancestrais estão em camadas inferiores do mundo astral ou no inferno e não têm forças pra proteger os descendentes. O Osatoshi os salva e fortalece pra que voltem a proteger.' },
+          { q: 'O que significa "era do acerto de contas dos carmas"?', opts: ['Era em que precisamos pagar dívidas em dinheiro', 'Era em que os carmas de vidas passadas vêm à tona pra serem resolvidos', 'Era de paz total', 'Era em que ninguém sofre'], correct: 1, exp: 'Esta é a era em que os carmas acumulados em vidas passadas estão sendo "acertados" — quem nos perturba hoje foi quem sofreu nossas ações no passado. Por isso a regressão é tão importante.' },
+          { q: 'Quem chama-se "Espírito Vivo (Obsessor Vivo)"?', opts: ['Espírito de pessoa morta', 'Espírito de pessoa ENCARNADA (viva no corpo) que se soltou e está perturbando', 'Espírito de animal', 'Bunkon vingativo'], correct: 1, exp: 'Espírito vivo é a parte espiritual de uma pessoa VIVA (encarnada no corpo) que se soltou — por desentendimentos, traumas, raiva, inveja — e está perturbando outra pessoa.' },
+          { q: 'Quem é o "Deus de Palha" e em qual Osatoshi específico ele atua?', opts: ['Um deus extraterrestre — atua no Osatoshi de Deuses', 'Deus que ajuda na limpeza de magia negra — atua junto com a Shinri', 'Um tipo de bunkon — atua em ancestrais', 'Não existe'], correct: 1, exp: 'O Deus de Palha é o deus que aguarda nosso comando para nos ajudar na dissolução de trabalhos de magia negra. Junto com os deuses da Shinri, ele limpa todos os resquícios da magia.' },
+          { q: 'No Osatoshi de Animais NÃO Vingativos, qual a primeira frase ao espírito do animal?', opts: ['Você pode ir embora', 'Você pode voltar a ser um espírito humano e subir para o céu', 'Você sempre será animal', 'Não temos nada a falar'], correct: 1, exp: 'A frase inicial é "Então, você pode voltar a ser um espírito humano e subir para o céu" — porque quase 100% dos animais de estimação tinham alma humana antes.' },
+          { q: 'Por que os ANCESTRAIS RESPONSÁVEIS devem ser salvos com Osatoshis SEMANAIS ou DIÁRIOS?', opts: ['São muitos — uma vez não basta', 'Com a ascensão da Terra, novas vagas se abrem constantemente — outros ancestrais do inferno passam a ocupar essas vagas', 'Pra cobrar mais kisha', 'Tradição'], correct: 1, exp: 'Com a ascensão do planeta, ancestrais do inferno passam a ser ancestrais responsáveis. Assim, sempre há novos ancestrais responsáveis querendo ser salvos — fazer Osatoshis semanais/diários (Osatoshi de Garrafa) é a recomendação atual.' },
+          { q: 'Diferença entre Osatoshi INDIVIDUAL e ESPECÍFICOS?', opts: ['Não há diferença', 'Individual trabalha vários tipos numa só sessão (foco na pessoa). Específicos têm foco direcionado (local, animal, falecido, ancestrais)', 'Individual é mais barato', 'Específicos não existem'], correct: 1, exp: 'O Individual salva todos os espíritos que perturbam UMA pessoa (vingativos, vivos, bebês, deuses, etc.) em uma sessão. Os Específicos têm foco direcionado: um local, um animal, um falecido, ancestrais ou harmonização.' }
+        ];
+
+        const handleAnswer = (idx) => {
+          if (selectedAnswer !== null) return;
+          setSelectedAnswer(idx);
+          if (idx === questions[currentQ].correct) setScore(score + 1);
+        };
+        const next = () => {
+          if (currentQ < questions.length - 1) { setCurrentQ(currentQ + 1); setSelectedAnswer(null); }
+          else setShowResult(true);
+        };
+        const reset = () => { setCurrentQ(0); setSelectedAnswer(null); setShowResult(false); setScore(0); };
+
+        if (showResult) {
+          const pct = (score / questions.length) * 100;
+          const msg = pct >= 80 ? '🌟 Excelente!' : pct >= 60 ? '✨ Bom trabalho!' : '🙏 Continue estudando!';
+          return (
+            <div style={{ padding: '2rem 1.5rem', maxWidth: '900px', margin: '0 auto', textAlign: 'center' }}>
+              <div style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.dark})`, padding: '2rem', borderRadius: '20px', color: 'white', marginBottom: '1.5rem' }}>
+                <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>{pct >= 80 ? '🏆' : pct >= 60 ? '✨' : '🙏'}</div>
+                <h1 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{msg}</h1>
+                <div style={{ fontSize: '3rem', fontWeight: 'bold', margin: '1rem 0' }}>{score}/{questions.length}</div>
+                <p style={{ opacity: 0.95 }}>{Math.round(pct)}% de acerto</p>
+              </div>
+              <button onClick={reset} style={{ background: colors.primary, color: 'white', border: 'none', padding: '0.9rem 2rem', borderRadius: '10px', fontSize: '1rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                <RotateCcw size={18} /> Refazer Quiz
+              </button>
+            </div>
+          );
+        }
+        const question = questions[currentQ];
+        return (
+          <div style={{ padding: '2rem 1.5rem', maxWidth: '900px', margin: '0 auto' }}>
+            <div style={{ marginBottom: '1.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                <span style={{ color: colors.primary, fontWeight: 'bold', fontSize: '0.9rem' }}>Pergunta {currentQ + 1} de {questions.length}</span>
+                <span style={{ color: colors.dark, fontSize: '0.85rem' }}>Acertos: {score}</span>
+              </div>
+              <div style={{ background: colors.light, height: '6px', borderRadius: '3px', overflow: 'hidden' }}>
+                <div style={{ background: `linear-gradient(90deg, ${colors.secondary}, ${colors.primary})`, height: '100%', width: `${((currentQ + 1) / questions.length) * 100}%`, transition: 'width 0.3s' }} />
+              </div>
+            </div>
+            <div style={{ background: 'white', padding: '1.5rem', borderRadius: '16px', boxShadow: '0 4px 16px rgba(0,0,0,0.06)', marginBottom: '1rem' }}>
+              <h2 style={{ color: colors.dark, fontSize: '1.05rem', lineHeight: '1.5', marginBottom: '1.25rem' }}>{question.q}</h2>
+              {question.opts.map((opt, i) => {
+                const isSelected = selectedAnswer === i;
+                const isCorrect = i === question.correct;
+                const showFeedback = selectedAnswer !== null;
+                let bg = colors.light; let border = colors.light;
+                if (showFeedback) {
+                  if (isCorrect) { bg = '#D4EDDA'; border = '#2E7D32'; }
+                  else if (isSelected && !isCorrect) { bg = '#F8D7DA'; border = '#C62828'; }
+                }
+                return (
+                  <div key={i} onClick={() => handleAnswer(i)} style={{ background: bg, border: `2px solid ${border}`, padding: '0.9rem 1rem', borderRadius: '10px', marginBottom: '0.6rem', cursor: selectedAnswer === null ? 'pointer' : 'default', color: colors.dark, fontSize: '0.95rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ lineHeight: '1.4' }}>{opt}</span>
+                    {showFeedback && isCorrect && <CheckCircle size={20} color="#2E7D32" />}
+                    {showFeedback && isSelected && !isCorrect && <XCircle size={20} color="#C62828" />}
+                  </div>
+                );
+              })}
+            </div>
+            {selectedAnswer !== null && (
+              <>
+                <div style={{ background: colors.cream, padding: '1rem 1.25rem', borderRadius: '12px', marginBottom: '1rem', borderLeft: `4px solid ${colors.accent}` }}>
+                  <div style={{ color: colors.primary, fontSize: '0.8rem', fontWeight: 'bold', marginBottom: '0.4rem' }}>💡 EXPLICAÇÃO</div>
+                  <p style={{ color: colors.dark, lineHeight: '1.6', fontSize: '0.9rem' }}>{question.exp}</p>
+                </div>
+                <button onClick={next} style={{ background: colors.primary, color: 'white', border: 'none', padding: '0.9rem', width: '100%', borderRadius: '10px', fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', fontWeight: '500' }}>
+                  {currentQ < questions.length - 1 ? <>Próxima pergunta <ChevronRight size={20} /></> : <>Ver resultado <CheckCircle size={20} /></>}
+                </button>
+              </>
+            )}
+          </div>
+        );
+      };
+
+      return (
+        <div style={{ minHeight: '100vh', background: colors.light }}>
+          <DisclaimerBar />
+          <Header />
+          {currentPage === 'home' && <HomePage />}
+          {currentPage === 'oracao' && <OracaoPage />}
+          {currentPage === 'primeiro' && <PrimeiroPage />}
+          {currentPage === 'fluxo-simples' && <FluxoSimplesPage />}
+          {currentPage === 'fluxo-vingativo' && <FluxoVingativoPage />}
+          {currentPage === 'fluxo-nao-vingativo' && <FluxoNaoVingativoPage />}
+          {currentPage === 'tipos' && <TiposPage />}
+          {currentPage === 'especificos-intro' && <EspecificosIntroPage />}
+          {currentPage === 'especificos-tipos' && <EspecificosTiposPage />}
+          {currentPage === 'quiz' && <QuizPage />}
+          <Footer />
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('osatoshi-root'));
+    root.render(<OsatoshiApp />);
+  </script>
+</body>
+</html>
